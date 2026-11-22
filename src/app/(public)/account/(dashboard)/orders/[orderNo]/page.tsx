@@ -51,7 +51,7 @@ export default async function AccountOrderDetailPage({
       <div className="mb-5">
         <Link
           href="/account/orders"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-charcoal-500 hover:text-terracotta-600"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-clay"
         >
           <ArrowLeft className="h-4 w-4" /> All orders
         </Link>
@@ -59,8 +59,8 @@ export default async function AccountOrderDetailPage({
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold sm:text-[28px]">{order.order_no}</h1>
-          <p className="mt-1 text-sm text-charcoal-400">Placed {formatDateTime(order.created_at)}</p>
+          <h1 className="text-2xl font-normal sm:text-[28px]">{order.order_no}</h1>
+          <p className="mt-1 text-sm text-ink-muted">Placed {formatDateTime(order.created_at)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <PaymentBadge status={order.payment_status} />
@@ -72,15 +72,15 @@ export default async function AccountOrderDetailPage({
         {/* Items */}
         <div className="space-y-4">
           <div className="card overflow-hidden">
-            <div className="border-b border-charcoal-100 px-4 py-3">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-charcoal-500">
+            <div className="border-b border-line px-4 py-3">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">
                 Items ({order.items.length})
               </h2>
             </div>
             <ul className="divide-y divide-charcoal-100">
               {order.items.map((item) => (
                 <li key={item.id} className="flex items-center gap-3 px-4 py-3.5">
-                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-cream-300">
+                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xs bg-paper-3">
                     {hasRealImage(item.image_url) ? (
                       <Image
                         src={displayImage(item.image_url)}
@@ -90,29 +90,29 @@ export default async function AccountOrderDetailPage({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center text-xs font-bold text-charcoal-400">
+                      <span className="flex h-full w-full items-center justify-center text-xs font-medium text-ink-muted">
                         {item.product_name.charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-charcoal-800">
+                    <p className="truncate text-sm font-semibold text-ink">
                       {item.product_name}
                     </p>
-                    <p className="text-xs text-charcoal-400">
+                    <p className="text-xs text-ink-muted">
                       {formatNPR(item.unit_price)} × {item.quantity}
                     </p>
                   </div>
-                  <p className="text-sm font-bold">{formatNPR(item.line_total)}</p>
+                  <p className="text-sm font-medium">{formatNPR(item.line_total)}</p>
                 </li>
               ))}
             </ul>
-            <div className="space-y-2 border-t border-charcoal-100 bg-cream-200/60 px-4 py-3.5">
+            <div className="space-y-2 border-t border-line bg-paper-2/60 px-4 py-3.5">
               <MoneyRow label="Subtotal" value={order.subtotal} />
               <MoneyRow label="Delivery" value={order.delivery_fee} />
-              <div className="flex items-center justify-between border-t border-charcoal-200 pt-2 text-sm">
-                <span className="font-bold text-charcoal-700">Total</span>
-                <span className="text-lg font-extrabold text-terracotta-600">
+              <div className="flex items-center justify-between border-t border-line-strong pt-2 text-sm">
+                <span className="font-medium text-ink">Total</span>
+                <span className="text-lg font-normal text-clay">
                   {formatNPR(order.total)}
                 </span>
               </div>
@@ -121,15 +121,15 @@ export default async function AccountOrderDetailPage({
 
           {/* Timeline */}
           <div className="card p-4 sm:p-5">
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-charcoal-500">
+            <h2 className="mb-4 text-sm font-medium uppercase tracking-wide text-ink-soft">
               Progress
             </h2>
             {cancelled ? (
-              <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+              <div className="rounded-xs bg-red-50 p-4 text-sm text-red-700">
                 This order was cancelled. Message us on WhatsApp if that looks wrong.
               </div>
             ) : (
-              <ol className="relative ml-3 border-l-2 border-charcoal-100">
+              <ol className="relative ml-3 border-l-2 border-line">
                 {STATUS_FLOW.map((status, i) => {
                   const done = i <= currentIdx;
                   const current = i === currentIdx;
@@ -140,8 +140,8 @@ export default async function AccountOrderDetailPage({
                         className={cn(
                           "absolute -left-[13px] flex h-6 w-6 items-center justify-center rounded-full border-2",
                           done
-                            ? "border-terracotta-500 bg-terracotta-500 text-white"
-                            : "border-charcoal-200 bg-white"
+                            ? "border-clay bg-clay text-white"
+                            : "border-line-strong bg-surface"
                         )}
                       >
                         {done ? (
@@ -154,16 +154,16 @@ export default async function AccountOrderDetailPage({
                         className={cn(
                           "text-sm font-semibold",
                           current
-                            ? "text-terracotta-600"
+                            ? "text-clay"
                             : done
-                              ? "text-charcoal-800"
-                              : "text-charcoal-300"
+                              ? "text-ink"
+                              : "text-ink-faint"
                         )}
                       >
                         {statusLabel[status]}
                       </p>
                       {event && (
-                        <p className="text-xs text-charcoal-400">
+                        <p className="text-xs text-ink-muted">
                           {formatDateTime(event.created_at)}
                           {event.note ? ` · ${event.note}` : ""}
                         </p>
@@ -179,11 +179,11 @@ export default async function AccountOrderDetailPage({
         {/* Sidebar */}
         <div className="space-y-4">
           <div className="card p-4 sm:p-5">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-charcoal-500">
+            <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">
               Delivery
             </h2>
-            <div className="mt-3 space-y-1 text-sm text-charcoal-600">
-              <p className="font-semibold text-charcoal-800">{order.customer_name}</p>
+            <div className="mt-3 space-y-1 text-sm text-ink-soft">
+              <p className="font-semibold text-ink">{order.customer_name}</p>
               <p>{order.phone}</p>
               {order.email && <p className="break-all">{order.email}</p>}
               <p className="pt-1 leading-relaxed">
@@ -192,19 +192,19 @@ export default async function AccountOrderDetailPage({
               </p>
             </div>
             {order.notes && (
-              <p className="mt-3 rounded-lg bg-cream-200 p-3 text-xs leading-relaxed text-charcoal-500">
-                <span className="font-semibold text-charcoal-700">Note:</span> {order.notes}
+              <p className="mt-3 rounded-xs bg-paper-2 p-3 text-xs leading-relaxed text-ink-soft">
+                <span className="font-semibold text-ink">Note:</span> {order.notes}
               </p>
             )}
-            <div className="mt-4 flex items-center justify-between border-t border-charcoal-100 pt-3 text-sm">
-              <span className="text-charcoal-500">Payment</span>
+            <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+              <span className="text-ink-soft">Payment</span>
               <span className="font-semibold">{PAYMENT_LABEL[order.payment_method] ?? order.payment_method}</span>
             </div>
           </div>
 
           <div className="card p-4 sm:p-5">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-charcoal-500">Need help?</h2>
-            <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
+            <h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">Need help?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               Send us your order number on WhatsApp and we&apos;ll pick it up from there.
             </p>
             <a

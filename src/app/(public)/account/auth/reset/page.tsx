@@ -62,8 +62,8 @@ export default async function ResetPasswordPage({
           : "We'll email you a secure link to set a new password."
       }
       below={
-        <p className="text-center text-sm text-charcoal-500">
-          <Link href="/account/auth/login" className="font-semibold text-terracotta-600 hover:underline">
+        <p className="text-center text-sm text-ink-soft">
+          <Link href="/account/auth/login" className="font-semibold text-clay hover:underline">
             Back to sign in
           </Link>
         </p>

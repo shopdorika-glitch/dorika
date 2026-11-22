@@ -9,8 +9,8 @@
 insert into public.categories (name, slug, description, image_url, sort_order) values
   ('Wall Art',        'wall-art',        'Statement string art pieces for your walls.',        'https://picsum.photos/seed/dorika-wall/800/800',  1),
   ('Custom Face Art', 'custom-face-art', 'Your photo, hand-woven into thread on a 45cm plank.', 'https://picsum.photos/seed/dorika-face/800/800',  2),
-  ('Home Decor',      'home-decor',      'Warm, handmade accents for every room.',             'https://picsum.photos/seed/dorika-decor/800/800', 3),
-  ('Gifts',           'gifts',           'Thoughtful, one-of-a-kind handmade gifts.',          'https://picsum.photos/seed/dorika-gift/800/800',  4)
+  ('Home Decor',      'home-decor',      'Warm, crafted accents for every room.',             'https://picsum.photos/seed/dorika-decor/800/800', 3),
+  ('Gifts',           'gifts',           'Thoughtful, one-of-a-kind crafted gifts.',          'https://picsum.photos/seed/dorika-gift/800/800',  4)
 on conflict (slug) do nothing;
 
 -- Products ------------------------------------------------------------

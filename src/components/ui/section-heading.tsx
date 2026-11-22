@@ -1,25 +1,56 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Editorial section header: a small mono annotation over a display line,
+ * with an optional index ("01") that keeps long pages navigable.
+ */
 export function SectionHeading({
-  eyebrow, title, subtitle, align = "center", className,
+  eyebrow,
+  title,
+  subtitle,
+  align = "left",
+  index,
+  className,
+  action,
 }: {
   eyebrow?: string;
-  title: string;
+  title: React.ReactNode;
   subtitle?: string;
-  align?: "center" | "left";
+  align?: "left" | "center";
+  index?: string;
   className?: string;
+  action?: React.ReactNode;
 }) {
   return (
     <div
       className={cn(
-        "mb-10 max-w-2xl",
-        align === "center" ? "mx-auto text-center" : "text-left",
+        "mb-10 flex flex-col gap-6 sm:mb-14",
+        action && "md:flex-row md:items-end md:justify-between",
+        align === "center" && "items-center text-center",
         className
       )}
     >
-      {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-      <h2 className="text-3xl font-extrabold sm:text-4xl">{title}</h2>
-      {subtitle && <p className="mt-3 text-charcoal-400">{subtitle}</p>}
+      <div className={cn("max-w-2xl", align === "center" && "mx-auto")}>
+        {(eyebrow || index) && (
+          <div
+            className={cn(
+              "mb-4 flex items-center gap-3",
+              align === "center" && "justify-center"
+            )}
+          >
+            {index && <span className="figure text-clay">{index}</span>}
+            {index && eyebrow && <span className="h-px w-6 bg-line-strong" aria-hidden="true" />}
+            {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+          </div>
+        )}
+        <h2 className="display-2">{title}</h2>
+        {subtitle && (
+          <p className={cn("mt-4 max-w-xl text-ink-soft", align === "center" && "mx-auto")}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
   );
 }

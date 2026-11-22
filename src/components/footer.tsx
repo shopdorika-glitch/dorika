@@ -1,98 +1,186 @@
 import Link from "next/link";
-import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from "lucide-react";
+import { ArrowUpRight, ArrowUp } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { siteConfig, navLinks, whatsappLink } from "@/lib/config";
+import { ThreadRule } from "@/components/ui/ornaments";
+import { siteConfig, whatsappLink } from "@/lib/config";
+import type { Category } from "@/lib/types";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-export function Footer() {
+const STUDIO_LINKS = [
+  { href: "/about", label: "Our story" },
+  { href: "/custom-art", label: "String Face Art" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+];
+
+const SUPPORT_LINKS = [
+  { href: "/shipping", label: "Shipping & returns" },
+  { href: "/track", label: "Track an order" },
+  { href: "/privacy", label: "Privacy policy" },
+  { href: "/terms", label: "Terms of service" },
+];
+
+export function Footer({ categories = [] }: { categories?: Category[] }) {
   const year = new Date().getFullYear();
+
   return (
-    <footer className="mt-10 border-t border-charcoal-100 bg-charcoal-800 text-charcoal-200">
-      <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Brand */}
-        <div className="sm:col-span-2 lg:col-span-1">
-          <Logo variant="light" className="h-8" />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-charcoal-300">
-            {siteConfig.tagline}. Every piece hand-woven with care in Khairenitar, Tanahun.
-          </p>
-          <div className="mt-5 flex gap-3">
-            <a href={siteConfig.social.facebook} target="_blank" rel="noopener noreferrer"
-               aria-label="Facebook"
-               className="rounded-full bg-charcoal-700 p-2.5 transition hover:bg-terracotta-500 hover:text-white">
-              <Facebook className="h-4 w-4" />
+    <footer className="relative bg-deep text-ondeep-soft">
+      <div className="absolute inset-x-0 top-0 -translate-y-1/2 opacity-50">
+        <ThreadRule tone="clay" />
+      </div>
+
+      <div className="shell py-16 lg:py-20">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] lg:gap-10">
+          {/* Brand */}
+          <div className="max-w-sm">
+            <Logo variant="light" />
+            <p className="mt-5 text-sm leading-relaxed text-ondeep-soft">
+              Hand-woven string art from Pokhara, Nepal — including our signature
+              String Face Art, made from a photo you send us.
+            </p>
+            <div className="mt-6 space-y-1 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-ondeep-soft/70">
+              <p>Pokhara, Nepal</p>
+            </div>
+            <a
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-6 inline-flex items-center gap-2 border-b border-ondeep/25 pb-1 text-sm text-ondeep transition-colors hover:border-clay"
+            >
+              Talk to the maker
+              <ArrowUpRight
+                className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                strokeWidth={1.5}
+              />
             </a>
-            <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer"
-               aria-label="Instagram"
-               className="rounded-full bg-charcoal-700 p-2.5 transition hover:bg-terracotta-500 hover:text-white">
-              <Instagram className="h-4 w-4" />
-            </a>
-            <a href={siteConfig.social.youtube} target="_blank" rel="noopener noreferrer"
-               aria-label="YouTube"
-               className="rounded-full bg-charcoal-700 p-2.5 transition hover:bg-terracotta-500 hover:text-white">
-              <Youtube className="h-4 w-4" />
-            </a>
+          </div>
+
+          {/* Shop */}
+          <FooterColumn title="Shop">
+            <FooterLink href="/shop">All pieces</FooterLink>
+            <FooterLink href="/custom-art">Custom String Face Art</FooterLink>
+            {categories.slice(0, 3).map((c) => (
+              <FooterLink key={c.id} href={`/shop?category=${c.slug}`}>
+                {c.name}
+              </FooterLink>
+            ))}
+          </FooterColumn>
+
+          {/* Studio */}
+          <FooterColumn title="Studio">
+            {STUDIO_LINKS.map((l) => (
+              <FooterLink key={l.href} href={l.href}>
+                {l.label}
+              </FooterLink>
+            ))}
+          </FooterColumn>
+
+          {/* Support */}
+          <FooterColumn title="Support">
+            {SUPPORT_LINKS.map((l) => (
+              <FooterLink key={l.href} href={l.href}>
+                {l.label}
+              </FooterLink>
+            ))}
+          </FooterColumn>
+        </div>
+
+        {/* Contact + payment */}
+        <div className="mt-14 grid gap-8 border-t border-ondeep/10 pt-8 md:grid-cols-2">
+          <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            <div>
+              <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ondeep-soft/60">
+                Call / WhatsApp
+              </p>
+              <a
+                href={`tel:+${siteConfig.contact.whatsapp}`}
+                className="mt-1 block text-sm text-ondeep transition-opacity hover:opacity-70"
+              >
+                {siteConfig.contact.phoneDisplay}
+              </a>
+            </div>
+            <div>
+              <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ondeep-soft/60">
+                Email
+              </p>
+              <a
+                href={`mailto:${siteConfig.contact.email}`}
+                className="mt-1 block break-all text-sm text-ondeep transition-opacity hover:opacity-70"
+              >
+                {siteConfig.contact.email}
+              </a>
+            </div>
+            <div className="sm:col-span-2">
+              <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ondeep-soft/60">
+                Workshop
+              </p>
+              <p className="mt-1 text-sm text-ondeep">{siteConfig.contact.address}</p>
+            </div>
+          </div>
+
+          <div className="md:justify-self-end md:text-right">
+            <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ondeep-soft/60">
+              Payment
+            </p>
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ondeep md:justify-end">
+              <li>Cash on delivery</li>
+              <li className="text-ondeep-soft/40">/</li>
+              <li>eSewa</li>
+              <li className="text-ondeep-soft/40">/</li>
+              <li>Khalti</li>
+              <li className="text-ondeep-soft/40">/</li>
+              <li>Bank transfer</li>
+            </ul>
+            <p className="mt-4 text-xs leading-relaxed text-ondeep-soft/70">
+              Every order is confirmed by phone before it is crafted.
+            </p>
           </div>
         </div>
 
-        {/* Quick links */}
-        <div>
-          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-white">Explore</h3>
-          <ul className="space-y-2.5 text-sm">
-            {navLinks.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="text-charcoal-300 transition hover:text-terracotta-400">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Help */}
-        <div>
-          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-white">Help</h3>
-          <ul className="space-y-2.5 text-sm">
-            <li><Link href="/faq" className="text-charcoal-300 hover:text-terracotta-400">FAQ</Link></li>
-            <li><Link href="/shipping" className="text-charcoal-300 hover:text-terracotta-400">Shipping &amp; Returns</Link></li>
-            <li><Link href="/privacy" className="text-charcoal-300 hover:text-terracotta-400">Privacy Policy</Link></li>
-            <li><Link href="/terms" className="text-charcoal-300 hover:text-terracotta-400">Terms of Service</Link></li>
-            <li><Link href="/track" className="text-charcoal-300 hover:text-terracotta-400">Track Order</Link></li>
-          </ul>
-        </div>
-
-        {/* Contact */}
-        <div>
-          <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-white">Get in touch</h3>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2.5">
-              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-terracotta-400" />
-              <span className="text-charcoal-300">{siteConfig.contact.address}</span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="h-4 w-4 flex-shrink-0 text-terracotta-400" />
-              <a href={`tel:+${siteConfig.contact.whatsapp}`} className="text-charcoal-300 hover:text-terracotta-400">
-                {siteConfig.contact.phoneDisplay}
-              </a>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Mail className="h-4 w-4 flex-shrink-0 text-terracotta-400" />
-              <a href={`mailto:${siteConfig.contact.email}`} className="text-charcoal-300 hover:text-terracotta-400">
-                {siteConfig.contact.email}
-              </a>
-            </li>
-          </ul>
-          <a href={whatsappLink()} target="_blank" rel="noopener noreferrer"
-             className="mt-4 inline-flex items-center gap-2 rounded-full bg-whatsapp px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110">
-            Chat on WhatsApp
-          </a>
-        </div>
-      </div>
-
-      <div className="border-t border-charcoal-700">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-charcoal-400 sm:flex-row">
-          <p>© {year} Dorika. Handmade in Nepal with love.</p>
-          <p>Prices in {siteConfig.currency.code} ({siteConfig.currency.symbol})</p>
+        {/* Legal bar */}
+        <div className="mt-10 flex flex-col gap-4 border-t border-ondeep/10 pt-6 text-xs text-ondeep-soft/70 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {siteConfig.name}. Crafted in Nepal. All rights reserved.
+          </p>
+          <div className="flex items-center gap-5">
+            <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em]">
+              Prices in {siteConfig.currency.code}
+            </span>
+            <ThemeToggle className="text-ondeep-soft hover:bg-white/10 hover:text-ondeep" />
+            <a
+              href="#main"
+              className="group inline-flex items-center gap-1.5 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ondeep transition-opacity hover:opacity-70"
+            >
+              Top
+              <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5" strokeWidth={1.5} />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h2 className="font-mono text-[0.625rem] uppercase tracking-[0.18em] text-ondeep-soft/60">
+        {title}
+      </h2>
+      <ul className="mt-4 space-y-2.5 text-sm">{children}</ul>
+    </div>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="inline-block text-ondeep-soft transition-colors duration-200 hover:text-ondeep"
+      >
+        {children}
+      </Link>
+    </li>
   );
 }

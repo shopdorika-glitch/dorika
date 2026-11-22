@@ -2,10 +2,20 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, Loader2, Package, Check } from "lucide-react";
+import { Search, Loader2, Check, ArrowUpRight } from "lucide-react";
 import { Field, Input } from "@/components/ui/input";
-import { formatNPR, formatDateTime, statusLabel, statusColor, STATUS_FLOW, cn } from "@/lib/utils";
+import { formatNPR, formatDateTime, statusLabel, STATUS_FLOW, cn } from "@/lib/utils";
 import type { TrackResult, OrderStatus } from "@/lib/types";
+import { whatsappLink } from "@/lib/config";
+
+const statusTone: Record<OrderStatus, string> = {
+  pending: "bg-paper-2 text-ink-soft",
+  confirmed: "bg-clay-tint text-clay",
+  in_progress: "bg-clay-tint text-clay",
+  shipped: "bg-ink text-paper",
+  delivered: "bg-success-tint text-success",
+  cancelled: "bg-danger-tint text-danger",
+};
 
 function TrackInner() {
   const params = useSearchParams();
@@ -15,7 +25,6 @@ function TrackInner() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TrackResult | null>(null);
 
-  // If an order id is in the URL, pre-fill it (phone still required)
   useEffect(() => {
     const o = params.get("order");
     if (o) setOrderNo(o);
@@ -51,74 +60,111 @@ function TrackInner() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <form onSubmit={lookup} className="rounded-2xl border border-charcoal-100 bg-white p-6 shadow-soft sm:p-8">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <form onSubmit={lookup} className="border border-line bg-surface p-6 sm:p-8">
+        <h2 className="font-display text-xl tracking-tight text-ink">Find your order</h2>
+        <p className="mt-1.5 text-sm text-ink-soft">
+          The Order ID is on your confirmation. Use the phone number you ordered with.
+        </p>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <Field label="Order ID" required>
-            <Input value={orderNo} onChange={(e) => setOrderNo(e.target.value)} placeholder="DRK-XXXXXX" />
+            <Input value={orderNo} onChange={(e) => setOrderNo(e.target.value)} placeholder="DRK-XXXXXX" autoComplete="off" />
           </Field>
           <Field label="Phone number" required>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" />
+            <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" autoComplete="tel" />
           </Field>
         </div>
-        {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">{error}</p>}
+
+        {error && (
+          <p role="alert" aria-live="polite" className="mt-4 border-l-2 border-danger bg-danger-tint px-4 py-3 text-sm text-danger">
+            {error}
+          </p>
+        )}
+
         <button type="submit" disabled={loading} className="btn-primary btn-lg mt-5 w-full">
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Searching…</> : <><Search className="h-5 w-5" /> Track order</>}
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} /> Searching…
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" strokeWidth={1.5} /> Track order
+            </>
+          )}
         </button>
       </form>
 
       {result && (
-        <div className="mt-6 rounded-2xl border border-charcoal-100 bg-white p-6 shadow-soft sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-charcoal-100 pb-5">
+        <div className="mt-8 border border-line bg-surface">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line p-6 sm:p-8">
             <div>
-              <p className="text-sm text-charcoal-400">
-                {result.type === "custom" ? "Custom Art Request" : "Order"}
+              <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+                {result.type === "custom" ? "Custom art request" : "Order"}
               </p>
-              <p className="text-xl font-extrabold">{result.order_no}</p>
-              <p className="text-sm text-charcoal-400">Placed {formatDateTime(result.created_at)}</p>
+              <p className="mt-1.5 font-mono text-lg tracking-[0.06em] text-ink">{result.order_no}</p>
+              <p className="mt-1 text-xs text-ink-muted">Placed {formatDateTime(result.created_at)}</p>
             </div>
-            <span className={cn("badge !px-3 !py-1 text-sm", statusColor[result.status])}>
+            <span className={cn("badge px-2.5 py-1.5", statusTone[result.status])}>
               {statusLabel[result.status]}
             </span>
           </div>
 
-          <div className="flex items-center justify-between py-5 text-sm">
-            <span className="text-charcoal-500">Customer</span>
-            <span className="font-semibold">{result.customer_name}</span>
-          </div>
-          <div className="flex items-center justify-between border-t border-charcoal-100 py-5 text-sm">
-            <span className="text-charcoal-500">{result.type === "custom" ? "Price" : "Total"}</span>
-            <span className="font-extrabold text-terracotta-600">
-              {formatNPR((result.total ?? result.price ?? 0) as number)}
-            </span>
+          <div className="px-6 sm:px-8">
+            <div className="flex items-center justify-between border-b border-line py-4 text-sm">
+              <span className="text-ink-soft">Customer</span>
+              <span className="text-ink">{result.customer_name}</span>
+            </div>
+            <div className="flex items-center justify-between border-b border-line py-4 text-sm">
+              <span className="text-ink-soft">{result.type === "custom" ? "Price" : "Total"}</span>
+              <span className="tnum text-ink">
+                {formatNPR((result.total ?? result.price ?? 0) as number)}
+              </span>
+            </div>
           </div>
 
-          {/* Timeline */}
-          <div className="mt-2 border-t border-charcoal-100 pt-6">
-            <h3 className="mb-5 font-bold">Status timeline</h3>
+          <div className="p-6 sm:p-8">
+            <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+              Status timeline
+            </p>
+
             {cancelled ? (
-              <div className="rounded-xl bg-red-50 p-4 text-red-700">
-                This order was cancelled. Contact us on WhatsApp if you think this is a mistake.
+              <div className="mt-4 border-l-2 border-danger bg-danger-tint px-4 py-3 text-sm text-danger">
+                This order was cancelled. Message us if you think that is a mistake.
               </div>
             ) : (
-              <ol className="relative ml-3 border-l-2 border-charcoal-100">
+              <ol className="mt-5 border-l border-line pl-6">
                 {STATUS_FLOW.map((s, i) => {
                   const done = i <= currentIdx;
                   const current = i === currentIdx;
                   const evt = result.events.find((e) => e.status === s);
                   return (
-                    <li key={s} className="mb-6 ml-6 last:mb-0">
-                      <span className={cn(
-                        "absolute -left-[13px] flex h-6 w-6 items-center justify-center rounded-full border-2",
-                        done ? "border-terracotta-500 bg-terracotta-500 text-white" : "border-charcoal-200 bg-white"
-                      )}>
-                        {done ? <Check className="h-3.5 w-3.5" /> : <span className="h-2 w-2 rounded-full bg-charcoal-200" />}
+                    <li key={s} className="relative pb-6 last:pb-0">
+                      <span
+                        className={cn(
+                          "absolute -left-[31px] top-0.5 flex h-3 w-3 items-center justify-center rounded-full border",
+                          done ? "border-clay bg-clay text-white" : "border-line-strong bg-surface"
+                        )}
+                        aria-hidden="true"
+                      >
+                        {done && <Check className="h-2 w-2" strokeWidth={3} />}
                       </span>
-                      <p className={cn("font-semibold", current ? "text-terracotta-600" : done ? "text-charcoal-800" : "text-charcoal-300")}>
+                      <p
+                        className={cn(
+                          "text-sm",
+                          current ? "text-clay" : done ? "text-ink" : "text-ink-faint"
+                        )}
+                      >
                         {statusLabel[s as OrderStatus]}
+                        {current && (
+                          <span className="ml-2 font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-clay">
+                            Current
+                          </span>
+                        )}
                       </p>
                       {evt && (
-                        <p className="text-xs text-charcoal-400">
-                          {formatDateTime(evt.created_at)}{evt.note ? ` · ${evt.note}` : ""}
+                        <p className="mt-0.5 text-xs text-ink-muted">
+                          {formatDateTime(evt.created_at)}
+                          {evt.note ? ` · ${evt.note}` : ""}
                         </p>
                       )}
                     </li>
@@ -126,6 +172,21 @@ function TrackInner() {
                 })}
               </ol>
             )}
+
+            <div className="mt-6 border-t border-line pt-4">
+              <a
+                href={whatsappLink(`Hi Dorika, I'm checking on order ${result.order_no}.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink"
+              >
+                <span className="link-thread">Ask about this order</span>
+                <ArrowUpRight
+                  className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  strokeWidth={1.5}
+                />
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -135,7 +196,13 @@ function TrackInner() {
 
 export function TrackClient() {
   return (
-    <Suspense fallback={<div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-terracotta-500" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-12">
+          <Loader2 className="h-5 w-5 animate-spin text-clay" strokeWidth={1.5} />
+        </div>
+      }
+    >
       <TrackInner />
     </Suspense>
   );

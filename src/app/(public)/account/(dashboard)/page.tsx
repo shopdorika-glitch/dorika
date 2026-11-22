@@ -105,11 +105,11 @@ export default async function AccountOverviewPage({
 
       <section className="mt-8">
         <div className="mb-3 flex items-end justify-between gap-3">
-          <h2 className="text-lg font-bold">Recent orders</h2>
+          <h2 className="text-lg font-medium">Recent orders</h2>
           {orders.length > 0 && (
             <Link
               href="/account/orders"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-terracotta-600 hover:underline"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-clay hover:underline"
             >
               View all <ArrowRight className="h-4 w-4" />
             </Link>
@@ -129,11 +129,11 @@ export default async function AccountOverviewPage({
               <Link
                 key={order.id}
                 href={`/account/orders/${order.order_no}`}
-                className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 transition-colors hover:bg-cream-200"
+                className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 transition-colors hover:bg-paper-2"
               >
                 <div className="min-w-0">
-                  <p className="font-bold text-charcoal-800">{order.order_no}</p>
-                  <p className="truncate text-xs text-charcoal-400">
+                  <p className="font-medium text-ink">{order.order_no}</p>
+                  <p className="truncate text-xs text-ink-muted">
                     {formatDate(order.created_at)} · {order.item_count}{" "}
                     {order.item_count === 1 ? "item" : "items"}
                     {order.first_item_name ? ` · ${order.first_item_name}` : ""}
@@ -142,7 +142,7 @@ export default async function AccountOverviewPage({
                 <div className="flex items-center gap-2">
                   <PaymentBadge status={order.payment_status} />
                   <StatusBadge status={order.status} />
-                  <span className="ml-1 text-sm font-bold">{formatNPR(order.total)}</span>
+                  <span className="ml-1 text-sm font-medium">{formatNPR(order.total)}</span>
                 </div>
               </Link>
             ))}
@@ -152,10 +152,10 @@ export default async function AccountOverviewPage({
 
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
         <div className="card p-5">
-          <p className="flex items-center gap-2 text-sm font-bold text-charcoal-800">
-            <Sparkles className="h-4 w-4 text-terracotta-500" /> Made from your photo
+          <p className="flex items-center gap-2 text-sm font-medium text-ink">
+            <Sparkles className="h-4 w-4 text-clay" /> Made from your photo
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
+          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
             Custom String Face Art on a 45cm round plank, hand-woven in 7–10 days from the photo
             you upload.
           </p>
@@ -165,10 +165,10 @@ export default async function AccountOverviewPage({
         </div>
 
         <div className="card p-5">
-          <p className="flex items-center gap-2 text-sm font-bold text-charcoal-800">
-            <Link2 className="h-4 w-4 text-terracotta-500" /> Ordered as a guest before?
+          <p className="flex items-center gap-2 text-sm font-medium text-ink">
+            <Link2 className="h-4 w-4 text-clay" /> Ordered as a guest before?
           </p>
-          <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
+          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
             Add your mobile number in your profile, then pull in any past order placed with that
             number or email.
           </p>

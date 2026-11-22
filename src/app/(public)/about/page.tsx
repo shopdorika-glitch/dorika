@@ -1,136 +1,275 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Target, Sparkles, Hand, Leaf, Users } from "lucide-react";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { placeholderConfig, siteConfig } from "@/lib/config";
+import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
+import { siteConfig, whatsappLink } from "@/lib/config";
+import { Reveal } from "@/components/ui/reveal";
+import { ThreadRule } from "@/components/ui/ornaments";
 
 export const metadata: Metadata = {
-  title: "About Us",
-  description: "The story behind Dorika — a family string-art craft from Khairenitar, Tanahun, Nepal.",
+  title: "Our Story",
+  description:
+    "The story behind Dorika — a family string-art craft from Pokhara, Nepal.",
 };
 
 const values = [
-  { icon: Hand, title: "Handmade, always", desc: "No machines. Every piece is wound by hand, nail by nail." },
-  { icon: Heart, title: "Made with care", desc: "We treat every photo and every order as if it were our own." },
-  { icon: Leaf, title: "Quality materials", desc: "Durable planks and premium threads that stand the test of time." },
-  { icon: Users, title: "Local & proud", desc: "A family craft creating livelihoods in Tanahun." },
+  {
+    title: "Made with care",
+    desc: "We treat every photograph and every order as if it were our own.",
+  },
+  {
+    title: "Materials that last",
+    desc: "Durable planks and premium threads, chosen to hold their shape for years.",
+  },
+  {
+    title: "Local, and proud of it",
+    desc: "A family craft in Pokhara, Nepal — made and shipped from here.",
+  },
 ];
 
-const steps = [
-  { title: "Design", desc: "We translate your photo into a precise nail-and-thread pattern." },
-  { title: "Frame", desc: "We prepare and finish the 45cm round wooden plank." },
-  { title: "Nail", desc: "Hundreds of nails are hammered in by hand along the pattern." },
-  { title: "Weave", desc: "Thread is wound back and forth until your portrait emerges." },
+const process = [
+  { title: "Design", desc: "We translate your photograph into a precise nail-and-thread pattern." },
+  { title: "Frame", desc: "The 45 cm round wooden plank is prepared and finished by hand." },
+  { title: "Nail", desc: "The pattern is marked, then every nail is hammered in along the edge." },
+  { title: "Weave", desc: "Thread is wound back and forth across the nails until the portrait appears." },
+];
+
+const works = [
+  {
+    src: "/products/custom-string-face-art.jpg",
+    alt: "Single portrait string art in black thread on a round plywood plank",
+    title: "String Face Art",
+    meta: "45 cm · single portrait",
+  },
+  {
+    src: "/products/couple-portrait-face-art.jpg",
+    alt: "Two faces woven in black thread on a round plywood plank",
+    title: "Couple portrait",
+    meta: "45 cm · two faces",
+  },
+  {
+    src: "/products/himalaya-peaks-wall-art.jpg",
+    alt: "Himalayan peaks rendered in fine black thread on a round board",
+    title: "Himalaya peaks",
+    meta: "40 × 60 cm · landscape",
+  },
 ];
 
 export default function AboutPage() {
   return (
-    <div className="bg-cream-100">
-      {/* Hero */}
-      <section className="border-b border-charcoal-100 bg-white">
-        <div className="container-page grid items-center gap-10 py-14 lg:grid-cols-2">
-          <div>
-            <p className="eyebrow mb-2">Our story</p>
-            <h1 className="text-4xl font-extrabold sm:text-5xl">
-              Woven in Nepal,<br />made to be treasured
-            </h1>
-            <p className="mt-5 text-charcoal-500">
-              Dorika began in {siteConfig.contact.address} with a simple idea: that a length of
-              thread and a handful of nails could hold a memory. What started as a hobby grew
-              into a small family workshop making handmade string art — and our signature
-              String Face Art, woven from your own photos.
-            </p>
-            <div className="mt-7 flex gap-3">
-              <Link href="/custom-art" className="btn-primary btn-lg">Create your art</Link>
-              <Link href="/shop" className="btn-outline btn-lg">Browse shop</Link>
+    <div className="bg-paper">
+      {/* Header */}
+      <div className="border-b border-line">
+        <div className="shell pb-12 pt-6 lg:pb-20 lg:pt-8">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-muted">
+            <Link href="/" className="hover:text-ink">Home</Link>
+            <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
+            <span className="text-ink">Our story</span>
+          </nav>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-7">
+              <p className="eyebrow">The studio</p>
+              <h1 className="display-1 mt-4">
+                Woven in Nepal,
+                <br />
+                made to be kept.
+              </h1>
+            </div>
+            <div className="lg:col-span-5 lg:pt-2">
+              <p className="text-lede text-ink-soft">
+                Dorika is a small string-art workshop in Pokhara, Nepal. We turn photographs
+                into thread — line by line, nail by nail, by hand.
+              </p>
+              <dl className="mt-8 grid grid-cols-2 gap-4 border-t border-line pt-5">
+                <div>
+                  <dt className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+                    Workshop
+                  </dt>
+                  <dd className="mt-1 text-sm text-ink">Pokhara, Nepal</dd>
+                </div>
+                <div>
+                  <dt className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+                    Craft
+                  </dt>
+                  <dd className="mt-1 text-sm text-ink">Hand-woven string art</dd>
+                </div>
+              </dl>
             </div>
           </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-8 border-white shadow-card">
-            <Image src={placeholderConfig.wide("dorika-about")} alt="Dorika workshop" fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" />
+        </div>
+      </div>
+
+      {/* Story */}
+      <section className="section">
+        <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <p className="eyebrow">How it began</p>
+            <h2 className="display-3 mt-4">A length of thread and a handful of nails</h2>
+          </div>
+          <div className="space-y-6 text-[1.0625rem] leading-[1.75] text-ink-soft lg:col-span-7 lg:col-start-6">
+            <p className="first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-display first-letter:text-[3.4rem] first-letter:leading-[0.8] first-letter:text-ink">
+              Dorika began in Pokhara, Kaski, Nepal with a simple idea: that a length of thread and
+              a handful of nails could hold a memory. What started as a hobby grew into a small
+              family workshop making crafted string art — and our signature String Face Art, woven
+              from photographs sent to us by people across Nepal.
+            </p>
+            <p>
+              Because each piece is made for one person, there is no catalogue of identical copies —
+              only the portrait in front of us, and the person it is meant for. That is what we like
+              about it.
+            </p>
+            <div className="pt-2">
+              <ThreadRule className="text-clay/60" tone="current" />
+            </div>
+            <blockquote className="border-l-2 border-clay pl-6">
+              <p className="font-display text-xl leading-snug tracking-tight text-ink">
+                “A photograph is a moment. Wound in thread, it becomes something you can hang on a
+                wall and keep.”
+              </p>
+              <footer className="mt-3 font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+                Dorika — Pokhara, Nepal
+              </footer>
+            </blockquote>
           </div>
         </div>
       </section>
 
-      {/* Mission */}
-      <section className="section">
-        <div className="container-page grid gap-6 md:grid-cols-3">
-          <MissionCard icon={Target} title="Our mission" text="To turn everyday photos and spaces into handcrafted keepsakes that last a lifetime." />
-          <MissionCard icon={Sparkles} title="Our craft" text="Precision patterns, careful nailing, and patient weaving — the art is in the detail." />
-          <MissionCard icon={Heart} title="Our promise" text="Genuine handmade quality, honest pricing, and delivery to your door across Nepal." />
+      {/* Selected work */}
+      <section className="border-y border-line bg-paper-2">
+        <div className="shell py-14 lg:py-20">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">From the workshop</p>
+              <h2 className="display-3 mt-3">Recent pieces</h2>
+            </div>
+            <Link href="/shop" className="group inline-flex items-center gap-2 text-sm text-ink">
+              <span className="link-thread">See the collection</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {works.map((w, i) => (
+              <Reveal key={w.title} delay={i * 70}>
+                <figure>
+                  <div className="mat relative aspect-square bg-paper-3">
+                    <Image
+                      src={w.src}
+                      alt={w.alt}
+                      fill
+                      sizes="(max-width:640px) 90vw, (max-width:1024px) 45vw, 30vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-3 flex items-baseline justify-between gap-3 border-y border-line py-3">
+                    <span className="font-display text-[0.9375rem] tracking-tight text-ink">{w.title}</span>
+                    <span className="figure text-ink-muted">{w.meta}</span>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Process */}
-      <section className="section bg-white">
-        <div className="container-page">
-          <SectionHeading eyebrow="The craft process" title="How a piece comes to life" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <div key={s.title} className="rounded-2xl border border-charcoal-100 bg-cream-100 p-6">
-                <span className="text-sm font-bold text-terracotta-500">Step {i + 1}</span>
-                <h3 className="mt-1 text-lg font-bold">{s.title}</h3>
-                <p className="mt-2 text-sm text-charcoal-500">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Maker */}
       <section className="section">
-        <div className="container-page grid items-center gap-10 rounded-[2rem] bg-charcoal-800 p-8 text-white sm:p-12 lg:grid-cols-[1fr_1.5fr]">
-          <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl">
-            <Image src={placeholderConfig.product("dorika-maker")} alt="The maker" fill sizes="320px" className="object-cover" />
-          </div>
-          <div>
-            <p className="eyebrow mb-2 !text-terracotta-400">Meet the maker</p>
-            <h2 className="text-3xl font-extrabold text-white">Crafted by hand, with heart</h2>
-            <p className="mt-4 text-charcoal-200">
-              Behind every Dorika piece is a maker who cares about getting the little things
-              right — the tension of the thread, the finish of the plank, the likeness in a
-              portrait. We&apos;re a small team, and that&apos;s exactly why each order gets
-              our full attention.
+        <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <p className="eyebrow">The craft</p>
+            <h2 className="display-3 mt-4">Four stages, one pair of hands</h2>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-soft">
+              Most portraits take four to five days from the moment a photograph arrives. Rushing
+              any of these stages shows in the final piece.
             </p>
           </div>
+          <ol className="lg:col-span-7 lg:col-start-6">
+            {process.map((p, i) => (
+              <Reveal as="li" key={p.title} delay={i * 60} className="border-t border-line py-6 last:border-b">
+                <div className="flex gap-6">
+                  <span className="pt-1 font-mono text-[0.6875rem] tracking-[0.1em] text-clay">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-xl tracking-tight text-ink">{p.title}</h3>
+                    <p className="mt-1.5 max-w-md text-sm leading-relaxed text-ink-soft">{p.desc}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </ol>
         </div>
       </section>
 
       {/* Values */}
-      <section className="section bg-white">
-        <div className="container-page">
-          <SectionHeading eyebrow="What we stand for" title="Our values" />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((v) => (
-              <div key={v.title} className="rounded-2xl border border-charcoal-100 bg-cream-100 p-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-terracotta-50 text-terracotta-600">
-                  <v.icon className="h-6 w-6" />
+      <section className="border-t border-line bg-paper">
+        <div className="shell py-14 lg:py-20">
+          <p className="eyebrow">What we stand for</p>
+          <h2 className="display-3 mt-3 max-w-lg">Four things we will not compromise</h2>
+          <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+            {values.map((v, i) => (
+              <Reveal key={v.title} delay={i * 60} className="flex gap-5 border-t border-line pt-5">
+                <span className="font-mono text-[0.6875rem] tracking-[0.1em] text-ink-faint">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="font-display text-lg tracking-tight text-ink">{v.title}</h3>
+                  <p className="mt-1 max-w-sm text-sm leading-relaxed text-ink-soft">{v.desc}</p>
                 </div>
-                <h3 className="font-bold">{v.title}</h3>
-                <p className="mt-1 text-sm text-charcoal-500">{v.desc}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
-    </div>
-  );
-}
 
-function MissionCard({
-  icon: Icon, title, text,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-charcoal-100 bg-white p-7 shadow-soft">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-terracotta-500 text-white">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-lg font-bold">{title}</h3>
-      <p className="mt-2 text-charcoal-500">{text}</p>
+      {/* Visit / contact */}
+      <section className="border-t border-line bg-deep text-ondeep">
+        <div className="shell grid gap-10 py-16 lg:grid-cols-12 lg:py-20">
+          <div className="lg:col-span-6">
+            <p className="eyebrow text-ondeep-soft/70">Visit the workshop</p>
+            <h2 className="display-3 mt-4 text-ondeep">
+              {siteConfig.contact.address}
+            </h2>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-ondeep-soft">
+              If you are nearby, you are welcome to see a piece being made. Message first so we know
+              to expect you.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a
+                href={whatsappLink("Hi Dorika, I'd like to visit the workshop.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 border-b border-ondeep/30 pb-1 text-sm text-ondeep transition-colors hover:border-clay"
+              >
+                Message the studio
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} />
+              </a>
+              <Link href="/contact" className="text-sm text-ondeep-soft hover:text-ondeep">
+                Contact details
+              </Link>
+            </div>
+          </div>
+          <div className="lg:col-span-5 lg:col-start-8">
+            <div className="border border-ondeep/15 p-6">
+              <p className="font-display text-lg tracking-tight text-ondeep">
+                Commission a portrait
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ondeep-soft">
+                45 cm round plank, made in {siteConfig.customArt.makingTime}, delivered anywhere in
+                Nepal.
+              </p>
+              <Link
+                href="/custom-art"
+                className="group mt-5 inline-flex items-center gap-2.5 bg-ondeep px-5 py-3 text-[0.75rem] font-medium uppercase tracking-[0.1em] text-ink transition-colors hover:bg-clay hover:text-white"
+              >
+                Start here
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

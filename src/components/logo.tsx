@@ -2,10 +2,12 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /**
- * Dorika wordmark logo, rebuilt from the brand SVG.
- * - charcoal wordmark (#24272B)
- * - terracotta "thread" sweep with knot details (#C55A29)
- * `variant="light"` renders the wordmark in white for dark backgrounds.
+ * Dorika wordmark.
+ *
+ * Drawn as live text rather than SVG <text> so the letterforms always use the
+ * loaded display face (and stay selectable, searchable and crisp at any size).
+ * The clay thread underneath is the constant: it sweeps under the word and is
+ * pinned at both ends with a nail head.
  */
 export function Logo({
   className,
@@ -16,81 +18,65 @@ export function Logo({
   variant?: "dark" | "light";
   withLink?: boolean;
 }) {
-  const fill = variant === "light" ? "#FFFFFF" : "#24272B";
-
-  const svg = (
-    <svg
-      viewBox="0 0 1200 260"
-      className={cn("h-9 w-auto", className)}
-      role="img"
-      aria-label="Dorika"
+  const wordmark = (
+    <span
+      className={cn(
+        "group/logo relative inline-flex flex-col items-stretch leading-none",
+        className
+      )}
     >
-      <text
-        x="20"
-        y="175"
-        fontFamily="var(--font-quicksand), Nunito, 'Arial Rounded MT Bold', sans-serif"
-        fontWeight="800"
-        fontSize="200"
-        letterSpacing="-4"
-        fill={fill}
+      <span
+        className={cn(
+          "font-display text-[1.55rem] font-medium leading-none tracking-[-0.045em] sm:text-[1.7rem]",
+          variant === "light" ? "text-ondeep" : "text-ink"
+        )}
       >
         Dorika
-      </text>
-      {/* Terracotta thread sweep */}
-      <path
-        d="M 40 225 C 300 195, 640 250, 980 205"
-        fill="none"
-        stroke="#C55A29"
-        strokeWidth="7.5"
-        strokeLinecap="round"
-      />
-      <g fill="#C55A29">
-        <circle cx="40" cy="224" r="9" />
+      </span>
+      <svg
+        viewBox="0 0 104 12"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        className="mt-[3px] h-[7px] w-full"
+      >
         <path
-          d="M 33 227 L 29 233 M 47 229 L 51 234"
-          stroke="#C55A29"
-          strokeWidth="4.5"
+          d="M2 7 C 20 3.5, 44 10.5, 66 6 S 92 2.5, 102 6"
+          fill="none"
+          stroke="rgb(var(--clay))"
+          strokeWidth="1.5"
           strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          className="transition-all duration-500 ease-out group-hover/logo:stroke-[2]"
         />
-        <circle cx="980" cy="205" r="9" />
-        <circle cx="986" cy="208" r="5.5" />
-      </g>
-    </svg>
+        <circle cx="2" cy="7" r="1.7" fill="rgb(var(--clay))" />
+        <circle cx="102" cy="6" r="1.7" fill="rgb(var(--clay))" />
+      </svg>
+    </span>
   );
 
-  if (!withLink) return svg;
+  if (!withLink) return wordmark;
   return (
     <Link href="/" aria-label="Dorika — home" className="inline-flex items-center">
-      {svg}
+      {wordmark}
     </Link>
   );
 }
 
-/** Compact mark (the thread knot) for favicon / tight spaces. */
+/** Compact mark — a nail ring with a single thread chord. Favicon / tight spaces. */
 export function LogoMark({ className }: { className?: string }) {
+  const nails = Array.from({ length: 28 }, (_, i) => {
+    const a = (i / 28) * Math.PI * 2 - Math.PI / 2;
+    return { cx: 16 + Math.cos(a) * 13, cy: 16 + Math.sin(a) * 13 };
+  });
   return (
-    <svg viewBox="0 0 64 64" className={cn("h-8 w-8", className)} role="img" aria-label="Dorika">
-      <rect width="64" height="64" rx="14" fill="#24272B" />
-      <path
-        d="M 12 38 C 24 30, 40 46, 52 34"
-        fill="none"
-        stroke="#C55A29"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-      />
-      <circle cx="12" cy="38" r="4.5" fill="#C55A29" />
-      <circle cx="52" cy="34" r="4.5" fill="#C55A29" />
-      <text
-        x="32"
-        y="24"
-        textAnchor="middle"
-        fontFamily="Quicksand, sans-serif"
-        fontWeight="800"
-        fontSize="20"
-        fill="#FFFFFF"
-      >
-        D
-      </text>
+    <svg viewBox="0 0 32 32" className={cn("h-8 w-8", className)} role="img" aria-label="Dorika">
+      <rect width="32" height="32" rx="2" fill="rgb(var(--deep))" />
+      {nails.map((n, i) => (
+        <circle key={i} cx={n.cx} cy={n.cy} r="0.55" fill="rgb(var(--on-deep) / 0.55)" />
+      ))}
+      <path d="M7 19 C 11 14, 21 22, 25 15" fill="none" stroke="rgb(var(--clay))" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="7" cy="19" r="1.5" fill="rgb(var(--clay))" />
+      <circle cx="25" cy="15" r="1.5" fill="rgb(var(--clay))" />
     </svg>
   );
 }

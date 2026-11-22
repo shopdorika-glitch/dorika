@@ -1,96 +1,158 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin, MessageCircle, Clock } from "lucide-react";
+import Link from "next/link";
+import { ChevronRight, ArrowUpRight } from "lucide-react";
 import { ContactForm } from "@/components/contact/contact-form";
 import { siteConfig, whatsappLink } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Get in touch with Dorika — call, WhatsApp, email, or visit us in Khairenitar, Tanahun, Nepal.",
+  title: "Contact",
+  description:
+    "Get in touch with Dorika — call, WhatsApp, email, or visit us in Pokhara, Nepal.",
 };
 
 export default function ContactPage() {
   return (
-    <div className="bg-cream-100">
-      <div className="border-b border-charcoal-100 bg-white">
-        <div className="container-page py-10 text-center">
-          <p className="eyebrow mb-2">We&apos;d love to hear from you</p>
-          <h1 className="text-4xl font-extrabold">Contact Dorika</h1>
-          <p className="mx-auto mt-2 max-w-lg text-charcoal-400">
-            Questions about a custom piece, an order, or anything else? Reach out.
-          </p>
+    <div className="bg-paper">
+      <div className="border-b border-line">
+        <div className="shell pb-10 pt-6 lg:pb-14 lg:pt-8">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-muted">
+            <Link href="/" className="hover:text-ink">Home</Link>
+            <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
+            <span className="text-ink">Contact</span>
+          </nav>
+          <div className="mt-8 grid gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <p className="eyebrow">Talk to us</p>
+              <h1 className="display-2 mt-3">Questions, photographs, or a piece in mind</h1>
+            </div>
+            <p className="max-w-sm text-sm leading-relaxed text-ink-soft lg:col-span-4 lg:col-start-9 lg:pt-2">
+              A person answers every message — usually the same day. WhatsApp is the quickest way to
+              reach the workshop.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="container-page py-12">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr]">
-          {/* Info */}
-          <div className="space-y-4">
-            <InfoCard icon={Phone} title="Call us" value={siteConfig.contact.phoneDisplay} href={`tel:+${siteConfig.contact.whatsapp}`} />
-            <InfoCard icon={MessageCircle} title="WhatsApp" value="Chat with us instantly" href={whatsappLink()} external />
-            <InfoCard icon={Mail} title="Email" value={siteConfig.contact.email} href={`mailto:${siteConfig.contact.email}`} />
-            <InfoCard icon={MapPin} title="Visit" value={siteConfig.contact.address} />
-            <div className="flex items-start gap-3 rounded-2xl border border-charcoal-100 bg-white p-5">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-terracotta-50 text-terracotta-600">
-                <Clock className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-bold text-charcoal-800">Opening hours</p>
-                <p className="text-sm text-charcoal-500">Sun–Fri · 9:00 AM – 6:00 PM</p>
-              </div>
-            </div>
-          </div>
+      <div className="shell grid gap-12 py-12 lg:grid-cols-12 lg:gap-16 lg:py-16">
+        {/* Details */}
+        <div className="lg:col-span-4">
+          <dl className="border-t border-line">
+            <ContactRow
+              label="Call or WhatsApp"
+              value={siteConfig.contact.phoneDisplay}
+              href={`tel:+${siteConfig.contact.whatsapp}`}
+              note="Sun–Fri · 9:00 AM – 6:00 PM"
+            />
+            <ContactRow
+              label="WhatsApp"
+              value="Chat with the studio"
+              href={whatsappLink()}
+              external
+              note="Send a photo directly"
+            />
+            <ContactRow
+              label="Email"
+              value={siteConfig.contact.email}
+              href={`mailto:${siteConfig.contact.email}`}
+              note="For longer questions"
+            />
+            <ContactRow
+              label="Workshop"
+              value={siteConfig.contact.address}
+              note="Visits by arrangement"
+            />
+          </dl>
 
-          {/* Form */}
-          <div>
-            <ContactForm />
+          <div className="mt-8 border border-line bg-paper-2 p-5">
+            <p className="font-display text-lg leading-snug tracking-tight text-ink">
+              Thinking about a portrait?
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              Send the photograph on WhatsApp before ordering. We will tell you honestly whether it
+              will translate well into thread.
+            </p>
+            <a
+              href={whatsappLink("Hi Dorika, I'd like to ask about a custom portrait.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-4 inline-flex items-center gap-2 text-sm text-ink"
+            >
+              <span className="link-thread">Ask about a portrait</span>
+              <ArrowUpRight
+                className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                strokeWidth={1.5}
+              />
+            </a>
           </div>
         </div>
 
-        {/* Map */}
-        <div className="mt-10 overflow-hidden rounded-2xl border border-charcoal-100 shadow-soft">
+        {/* Form */}
+        <div className="lg:col-span-7 lg:col-start-6">
+          <ContactForm />
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="shell pb-16">
+        <div className="mat relative h-[300px] sm:h-[380px]">
           <iframe
-            title="Dorika location — Khairenitar, Tanahun"
+            title="Dorika location — Pokhara, Nepal"
             src={siteConfig.mapEmbed}
-            width="100%"
-            height="400"
+            className="absolute inset-0 h-full w-full"
             style={{ border: 0 }}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
           />
         </div>
+        <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 border-t border-line pt-3">
+          <span className="figure">Fig. — Pokhara, Nepal</span>
+          <a
+            href="https://www.google.com/maps?q=Pokhara,Nepal"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="figure link-thread hover:text-ink"
+          >
+            Open in maps
+          </a>
+        </div>
       </div>
     </div>
   );
 }
 
-function InfoCard({
-  icon: Icon, title, value, href, external,
+function ContactRow({
+  label,
+  value,
+  href,
+  external,
+  note,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
+  label: string;
   value: string;
   href?: string;
   external?: boolean;
+  note?: string;
 }) {
-  const inner = (
-    <>
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-terracotta-50 text-terracotta-600">
-        <Icon className="h-5 w-5" />
-      </span>
-      <div>
-        <p className="font-bold text-charcoal-800">{title}</p>
-        <p className="text-sm text-charcoal-500">{value}</p>
-      </div>
-    </>
+  const valueEl = href ? (
+    <a
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="text-ink link-thread break-words"
+    >
+      {value}
+    </a>
+  ) : (
+    <span className="text-ink">{value}</span>
   );
-  const cls = "flex items-start gap-3 rounded-2xl border border-charcoal-100 bg-white p-5 transition hover:border-terracotta-300";
-  if (href) {
-    return (
-      <a href={href} className={cls} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-        {inner}
-      </a>
-    );
-  }
-  return <div className={cls}>{inner}</div>;
+
+  return (
+    <div className="border-b border-line py-5">
+      <dt className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+        {label}
+      </dt>
+      <dd className="mt-2 text-[0.9375rem]">{valueEl}</dd>
+      {note && <p className="mt-1 text-xs text-ink-muted">{note}</p>}
+    </div>
+  );
 }

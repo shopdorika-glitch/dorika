@@ -43,11 +43,11 @@ export default function LoginPage({
       title="Welcome back"
       subtitle="Sign in to see your orders and custom art requests. Guests can always track orders without an account."
       below={
-        <p className="text-center text-sm text-charcoal-500">
+        <p className="text-center text-sm text-ink-soft">
           New to Dorika?{" "}
           <Link
             href={`/account/auth/signup${redirectTo !== "/account" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`}
-            className="font-semibold text-terracotta-600 hover:underline"
+            className="font-semibold text-clay hover:underline"
           >
             Create an account
           </Link>
@@ -90,11 +90,11 @@ export default function LoginPage({
             <div className="flex items-center justify-between text-sm">
               <Link
                 href="/account/auth/reset"
-                className="font-semibold text-charcoal-500 hover:text-terracotta-600"
+                className="font-semibold text-ink-soft hover:text-clay"
               >
                 Forgot password?
               </Link>
-              <Link href="/track" className="font-semibold text-charcoal-500 hover:text-terracotta-600">
+              <Link href="/track" className="font-semibold text-ink-soft hover:text-clay">
                 Track an order
               </Link>
             </div>

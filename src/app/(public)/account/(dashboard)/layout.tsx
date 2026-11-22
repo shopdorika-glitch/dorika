@@ -14,9 +14,9 @@ export default async function AccountDashboardLayout({
   const profile = await getAccountProfile(session.userId, session.email);
 
   return (
-    <div className="min-h-[70vh] bg-cream-200">
-      <div className="container-page py-8 lg:py-10">
-        <div className="grid gap-6 lg:grid-cols-[264px_1fr] lg:gap-8">
+    <div className="min-h-[70vh] bg-paper">
+      <div className="shell py-8 lg:py-10">
+        <div className="grid gap-6 lg:grid-cols-[248px_1fr] lg:gap-10">
           <aside>
             <AccountNav
               name={profile.full_name}

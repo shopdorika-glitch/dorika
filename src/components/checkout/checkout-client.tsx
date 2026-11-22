@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2, Truck, Banknote, Wallet, Landmark, QrCode } from "lucide-react";
+import Link from "next/link";
+import { Loader2, Banknote, Wallet, Landmark, Lock } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { Turnstile } from "@/components/turnstile";
 import { HONEYPOT_FIELD } from "@/lib/security";
-import { displayImage } from "@/lib/config";
+import { displayImage, hasRealImage } from "@/lib/config";
 import { formatNPR, cn, isValidNepaliPhone } from "@/lib/utils";
 import type { PaymentMethod, Settings } from "@/lib/types";
+import { ProductCover } from "@/components/product-cover";
 
 export function CheckoutClient({ settings }: { settings: Settings | null }) {
   const router = useRouter();
@@ -35,11 +37,11 @@ export function CheckoutClient({ settings }: { settings: Settings | null }) {
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const methods: { id: PaymentMethod; label: string; desc: string; icon: typeof Truck; enabled: boolean }[] = [
-    { id: "cod", label: "Cash on Delivery", desc: "Pay when your order arrives", icon: Banknote, enabled: settings?.cod_enabled ?? true },
-    { id: "esewa", label: "eSewa", desc: "Pay via eSewa wallet", icon: Wallet, enabled: settings?.esewa_enabled ?? false },
-    { id: "khalti", label: "Khalti", desc: "Pay via Khalti wallet", icon: Wallet, enabled: settings?.khalti_enabled ?? false },
-    { id: "bank_transfer", label: "Bank Transfer / QR", desc: "Transfer to our bank or scan QR", icon: Landmark, enabled: settings?.bank_enabled ?? true },
+  const methods: { id: PaymentMethod; label: string; desc: string; icon: typeof Banknote; enabled: boolean }[] = [
+    { id: "cod", label: "Cash on delivery", desc: "Pay when your order arrives", icon: Banknote, enabled: settings?.cod_enabled ?? true },
+    { id: "esewa", label: "eSewa", desc: "Pay from your eSewa wallet", icon: Wallet, enabled: settings?.esewa_enabled ?? false },
+    { id: "khalti", label: "Khalti", desc: "Pay from your Khalti wallet", icon: Wallet, enabled: settings?.khalti_enabled ?? false },
+    { id: "bank_transfer", label: "Bank transfer / QR", desc: "Transfer to our bank, or scan the QR", icon: Landmark, enabled: settings?.bank_enabled ?? true },
   ];
   const activeMethods = methods.filter((m) => m.enabled);
 
@@ -84,39 +86,47 @@ export function CheckoutClient({ settings }: { settings: Settings | null }) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-charcoal-200 bg-white py-20 text-center">
-        <p className="text-charcoal-500">Your cart is empty.</p>
-        <a href="/shop" className="btn-primary btn-lg mt-6">Browse products</a>
+      <div className="mx-auto max-w-md border border-line bg-surface py-16 text-center">
+        <p className="font-display text-xl tracking-tight text-ink">Nothing to check out</p>
+        <p className="mx-auto mt-2 max-w-[30ch] text-sm leading-relaxed text-ink-soft">
+          Your cart is empty. Add a piece first — or commission a portrait from a photograph.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/shop" className="btn-primary btn-md">Browse the shop</Link>
+          <Link href="/custom-art" className="btn-outline btn-md">Custom art</Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} className="grid gap-8 lg:grid-cols-[1fr_380px]">
-      {/* Honeypot */}
+    <form onSubmit={submit} className="grid gap-10 lg:grid-cols-[1fr_380px] lg:gap-14">
       <input type="text" tabIndex={-1} autoComplete="off" className="hp-field"
         data-lpignore="true" data-1p-ignore="true" data-form-type="other"
         aria-hidden="true" name={HONEYPOT_FIELD} value={hp} onChange={(e) => setHp(e.target.value)} />
 
-      <div className="space-y-8">
-        {/* Delivery details */}
-        <section className="rounded-2xl border border-charcoal-100 bg-white p-6">
-          <h2 className="text-lg font-bold">Delivery details</h2>
-          <p className="mt-1 text-sm text-charcoal-400">No account needed — just tell us where to deliver.</p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div>
+        {/* Delivery */}
+        <section>
+          <div className="flex items-baseline gap-3 border-b border-line pb-4">
+            <span className="figure text-clay">01</span>
+            <h2 className="font-display text-xl tracking-tight text-ink">Delivery details</h2>
+          </div>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <Field label="Full name" required>
-              <Input value={form.customer_name} onChange={(e) => set("customer_name", e.target.value)} placeholder="Your name" />
+              <Input value={form.customer_name} onChange={(e) => set("customer_name", e.target.value)} placeholder="Your name" autoComplete="name" />
             </Field>
-            <Field label="Phone" required hint="We'll call to confirm">
-              <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" />
+            <Field label="Phone" required hint="We will call to confirm">
+              <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" autoComplete="tel" />
             </Field>
             <Field label="Email" hint="Optional — for confirmation" className="sm:col-span-2">
-              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" />
+              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" autoComplete="email" />
             </Field>
             <Field label="District" required>
-              <Input value={form.district} onChange={(e) => set("district", e.target.value)} placeholder="e.g. Tanahun" />
+              <Input value={form.district} onChange={(e) => set("district", e.target.value)} placeholder="e.g. Kaski" />
             </Field>
-            <Field label="City / Municipality">
+            <Field label="City / municipality">
               <Input value={form.city} onChange={(e) => set("city", e.target.value)} placeholder="e.g. Byas" />
             </Field>
             <Field label="Full delivery address" required className="sm:col-span-2">
@@ -132,58 +142,79 @@ export function CheckoutClient({ settings }: { settings: Settings | null }) {
         </section>
 
         {/* Payment */}
-        <section className="rounded-2xl border border-charcoal-100 bg-white p-6">
-          <h2 className="text-lg font-bold">Payment method</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {activeMethods.map((m) => (
-              <button
-                type="button"
-                key={m.id}
-                onClick={() => setPayment(m.id)}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl border-2 p-4 text-left transition",
-                  payment === m.id ? "border-terracotta-500 bg-terracotta-50" : "border-charcoal-100 hover:border-terracotta-300"
-                )}
-              >
-                <m.icon className={cn("h-6 w-6", payment === m.id ? "text-terracotta-600" : "text-charcoal-400")} />
-                <span>
-                  <span className="block font-semibold">{m.label}</span>
-                  <span className="text-xs text-charcoal-400">{m.desc}</span>
-                </span>
-              </button>
-            ))}
+        <section className="mt-12">
+          <div className="flex items-baseline gap-3 border-b border-line pb-4">
+            <span className="figure text-clay">02</span>
+            <h2 className="font-display text-xl tracking-tight text-ink">Payment method</h2>
+          </div>
+
+          <div role="radiogroup" aria-label="Payment method" className="mt-5 divide-y divide-line border-y border-line">
+            {activeMethods.map((m) => {
+              const selected = payment === m.id;
+              return (
+                <button
+                  type="button"
+                  key={m.id}
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setPayment(m.id)}
+                  className={cn(
+                    "flex w-full items-center gap-4 px-1 py-4 text-left transition-colors",
+                    selected ? "bg-paper-2" : "hover:bg-paper-2/60"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors",
+                      selected ? "border-clay" : "border-line-strong"
+                    )}
+                    aria-hidden="true"
+                  >
+                    {selected && <span className="h-2 w-2 rounded-full bg-clay" />}
+                  </span>
+                  <m.icon
+                    className={cn("h-4 w-4 flex-shrink-0", selected ? "text-clay" : "text-ink-muted")}
+                    strokeWidth={1.5}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm text-ink">{m.label}</span>
+                    <span className="block text-xs text-ink-muted">{m.desc}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {payment !== "cod" && (
-            <div className="mt-4 rounded-xl bg-cream-200 p-4 text-sm">
-              <p className="font-semibold text-charcoal-800">
+            <div className="mt-5 border border-line bg-paper-2 p-5">
+              <p className="text-sm text-ink">
                 {payment === "bank_transfer"
                   ? "Pay by bank transfer or QR"
                   : `Pay with ${payment === "esewa" ? "eSewa" : "Khalti"}`}
               </p>
 
               {payment === "esewa" && (
-                <p className="mt-1 text-charcoal-500">
-                  Send <strong>{formatNPR(total)}</strong> to eSewa{" "}
-                  <span className="font-mono font-semibold text-charcoal-800">
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  Send <strong className="text-ink">{formatNPR(total)}</strong> to eSewa{" "}
+                  <span className="font-mono text-ink">
                     {settings?.esewa_id || "— add your eSewa number in admin settings —"}
                   </span>
                 </p>
               )}
               {payment === "khalti" && (
-                <p className="mt-1 text-charcoal-500">
-                  Send <strong>{formatNPR(total)}</strong> to Khalti{" "}
-                  <span className="font-mono font-semibold text-charcoal-800">
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  Send <strong className="text-ink">{formatNPR(total)}</strong> to Khalti{" "}
+                  <span className="font-mono text-ink">
                     {settings?.khalti_id || "— add your Khalti number in admin settings —"}
                   </span>
                 </p>
               )}
               {payment === "bank_transfer" && (
-                <div className="mt-1 space-y-1 text-charcoal-500">
+                <div className="mt-1.5 space-y-1 text-sm text-ink-soft">
                   <p>
-                    Transfer <strong>{formatNPR(total)}</strong> to:
+                    Transfer <strong className="text-ink">{formatNPR(total)}</strong> to:
                   </p>
-                  <p className="font-mono font-semibold text-charcoal-800">
+                  <p className="font-mono text-ink">
                     {settings?.bank_name || "—"}
                     {settings?.bank_account_number
                       ? ` · ${settings.bank_account_number}`
@@ -195,18 +226,18 @@ export function CheckoutClient({ settings }: { settings: Settings | null }) {
                     <img
                       src={settings.bank_qr_url}
                       alt="Bank QR code"
-                      className="mt-2 h-40 w-40 rounded-lg bg-white object-contain p-2"
+                      className="mt-3 h-40 w-40 bg-white object-contain p-2"
                     />
                   )}
                 </div>
               )}
 
               {settings?.payment_note && (
-                <p className="mt-2 text-xs text-charcoal-400">{settings.payment_note}</p>
+                <p className="mt-2 text-xs leading-relaxed text-ink-muted">{settings.payment_note}</p>
               )}
 
-              <div className="mt-3">
-                <Field label="Transaction ID" htmlFor="payment_reference" hint="Paste the id from your payment receipt">
+              <div className="mt-4">
+                <Field label="Transaction ID" htmlFor="payment_reference" hint="Paste the ID from your payment receipt">
                   <Input
                     id="payment_reference"
                     value={reference}
@@ -217,53 +248,88 @@ export function CheckoutClient({ settings }: { settings: Settings | null }) {
               </div>
             </div>
           )}
+
+          <p className="mt-5 text-xs leading-relaxed text-ink-muted">
+            eSewa, Khalti and bank payments are confirmed manually by our team. You will receive a
+            call before the order is packed.
+          </p>
         </section>
       </div>
 
       {/* Summary */}
-      <aside className="h-fit rounded-2xl border border-charcoal-100 bg-white p-6 lg:sticky lg:top-24">
-        <h2 className="text-lg font-bold">Your order</h2>
-        <div className="mt-4 max-h-64 space-y-3 overflow-y-auto">
+      <aside className="h-fit border border-line bg-surface lg:sticky lg:top-28">
+        <div className="border-b border-line px-6 py-5">
+          <h2 className="font-display text-lg tracking-tight text-ink">Your order</h2>
+        </div>
+
+        <ul className="max-h-[280px] divide-y divide-line overflow-y-auto px-6">
           {items.map((i) => (
-            <div key={i.productId} className="flex gap-3">
-              <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-cream-200">
-                <Image src={displayImage(i.image)} alt={i.name} fill sizes="56px" className="object-cover" />
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-charcoal-800 px-1 text-[11px] font-bold text-white">
+            <li key={i.productId} className="flex gap-3 py-4">
+              <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden bg-paper-2">
+                {hasRealImage(i.image) ? (
+                  <Image src={displayImage(i.image)} alt={i.name} fill sizes="56px" className="object-cover" />
+                ) : (
+                  <ProductCover name={i.name} compact />
+                )}
+                <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center bg-ink px-1 font-mono text-[0.5625rem] text-paper">
                   {i.quantity}
                 </span>
               </div>
-              <div className="flex flex-1 items-center justify-between gap-2">
-                <span className="line-clamp-2 text-sm">{i.name}</span>
-                <span className="text-sm font-semibold">{formatNPR(i.price * i.quantity)}</span>
+              <div className="flex flex-1 items-center justify-between gap-3">
+                <span className="line-clamp-2 text-xs leading-snug text-ink-soft">{i.name}</span>
+                <span className="tnum flex-shrink-0 text-xs text-ink">
+                  {formatNPR(i.price * i.quantity)}
+                </span>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <div className="mt-4 space-y-2 border-t border-charcoal-100 pt-4 text-sm">
-          <div className="flex justify-between"><span className="text-charcoal-500">Subtotal</span><span className="font-semibold">{formatNPR(subtotal)}</span></div>
+        <dl className="space-y-2 border-t border-line px-6 py-4 text-sm">
           <div className="flex justify-between">
-            <span className="text-charcoal-500">Delivery</span>
-            <span className="font-semibold">{deliveryFee === 0 ? "Free" : formatNPR(deliveryFee)}</span>
+            <dt className="text-ink-soft">Subtotal</dt>
+            <dd className="tnum text-ink">{formatNPR(subtotal)}</dd>
           </div>
-        </div>
-        <div className="mt-3 flex justify-between border-t border-charcoal-100 pt-3 text-lg">
-          <span className="font-bold">Total</span>
-          <span className="font-extrabold text-terracotta-600">{formatNPR(total)}</span>
+          <div className="flex justify-between">
+            <dt className="text-ink-soft">Delivery</dt>
+            <dd className={cn("tnum", deliveryFee === 0 ? "text-success" : "text-ink")}>
+              {deliveryFee === 0 ? "Free" : formatNPR(deliveryFee)}
+            </dd>
+          </div>
+        </dl>
+
+        <div className="flex items-baseline justify-between border-t border-line px-6 py-4">
+          <span className="text-sm text-ink-soft">Total</span>
+          <span className="tnum font-display text-xl text-ink">{formatNPR(total)}</span>
         </div>
 
-        <div className="mt-4">
+        <div className="border-t border-line px-6 py-5">
           <Turnstile onToken={setToken} />
+
+          {error && (
+            <p role="alert" aria-live="polite" className="mb-3 border-l-2 border-danger bg-danger-tint px-3 py-2 text-xs text-danger">
+              {error}
+            </p>
+          )}
+
+          <button type="submit" disabled={submitting || !token} className="btn-primary btn-lg w-full">
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} /> Placing order…
+              </>
+            ) : (
+              <>Place order</>
+            )}
+          </button>
+
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[0.6875rem] text-ink-muted">
+            <Lock className="h-3 w-3" strokeWidth={1.5} />
+            Guest checkout · no account needed
+          </p>
+          <Link href="/cart" className="mt-2 block text-center text-xs text-ink-soft link-thread hover:text-ink">
+            Back to cart
+          </Link>
         </div>
-
-        {error && <p className="mt-3 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">{error}</p>}
-
-        <button type="submit" disabled={submitting || !token} className="btn-primary btn-lg mt-4 w-full">
-          {submitting ? <><Loader2 className="h-5 w-5 animate-spin" /> Placing order…</> : `Place order · ${formatNPR(total)}`}
-        </button>
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-charcoal-400">
-          <Truck className="h-3.5 w-3.5" /> Delivered across Nepal
-        </p>
       </aside>
     </form>
   );

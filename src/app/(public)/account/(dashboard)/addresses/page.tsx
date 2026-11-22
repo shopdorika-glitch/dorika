@@ -65,11 +65,11 @@ export default async function AccountAddressesPage({
       {showForm && (
         <div className="card mb-5 p-4 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="font-bold">{editing ? "Edit address" : "New address"}</h2>
+            <h2 className="font-medium">{editing ? "Edit address" : "New address"}</h2>
             {(editing || addresses.length > 0) && (
               <Link
                 href="/account/addresses"
-                className="text-sm font-semibold text-charcoal-500 hover:text-terracotta-600"
+                className="text-sm font-semibold text-ink-soft hover:text-clay"
               >
                 Cancel
               </Link>
@@ -145,12 +145,12 @@ export default async function AccountAddressesPage({
               />
             </Field>
 
-            <label className="flex items-center gap-2 text-sm font-semibold text-charcoal-600">
+            <label className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
               <input
                 type="checkbox"
                 name="is_default"
                 defaultChecked={editing?.is_default ?? addresses.length === 0}
-                className="h-4 w-4 rounded border-charcoal-300 text-terracotta-500"
+                className="h-4 w-4 rounded border-charcoal-300 text-clay"
               />
               Use as my default address
             </label>
@@ -163,7 +163,7 @@ export default async function AccountAddressesPage({
       )}
 
       {addresses.length === 0 ? (
-        <p className="text-sm text-charcoal-400">
+        <p className="text-sm text-ink-muted">
           No addresses saved yet — add one above and it will appear at checkout.
         </p>
       ) : (
@@ -171,24 +171,24 @@ export default async function AccountAddressesPage({
           {addresses.map((address) => (
             <div key={address.id} className="card flex flex-col p-4">
               <div className="flex items-start justify-between gap-2">
-                <p className="font-bold text-charcoal-800">{address.label || "Address"}</p>
+                <p className="font-medium text-ink">{address.label || "Address"}</p>
                 {address.is_default && (
-                  <span className="badge bg-terracotta-50 text-terracotta-700">
+                  <span className="badge bg-clay-tint text-clay">
                     <Star className="h-3 w-3" /> Default
                   </span>
                 )}
               </div>
-              <p className="mt-2 text-sm font-semibold text-charcoal-700">{address.full_name}</p>
-              <p className="text-sm text-charcoal-500">{address.phone}</p>
-              <p className="mt-1 text-sm leading-relaxed text-charcoal-500">
+              <p className="mt-2 text-sm font-semibold text-ink">{address.full_name}</p>
+              <p className="text-sm text-ink-soft">{address.phone}</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-soft">
                 {[address.address, address.city, address.district].filter(Boolean).join(", ")}
                 {address.landmark ? ` (near ${address.landmark})` : ""}
               </p>
 
-              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-charcoal-100 pt-3">
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
                 <Link
                   href={`/account/addresses?edit=${address.id}`}
-                  className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-charcoal-600 hover:bg-cream-200"
+                  className="inline-flex items-center gap-1 rounded-xs px-2 py-1 text-xs font-semibold text-ink-soft hover:bg-paper-2"
                 >
                   <Pencil className="h-3.5 w-3.5" /> Edit
                 </Link>
@@ -198,7 +198,7 @@ export default async function AccountAddressesPage({
                     <input type="hidden" name="id" value={address.id} />
                     <button
                       type="submit"
-                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-charcoal-600 hover:bg-cream-200"
+                      className="inline-flex items-center gap-1 rounded-xs px-2 py-1 text-xs font-semibold text-ink-soft hover:bg-paper-2"
                     >
                       <Check className="h-3.5 w-3.5" /> Make default
                     </button>
@@ -209,7 +209,7 @@ export default async function AccountAddressesPage({
                   <input type="hidden" name="id" value={address.id} />
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-charcoal-400 hover:bg-red-50 hover:text-red-600"
+                    className="inline-flex items-center gap-1 rounded-xs px-2 py-1 text-xs font-semibold text-ink-muted hover:bg-red-50 hover:text-red-600"
                   >
                     <Trash2 className="h-3.5 w-3.5" /> Remove
                   </button>

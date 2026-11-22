@@ -21,9 +21,9 @@ function resolveSiteUrl(): string {
 
 export const siteConfig = {
   name: "Dorika",
-  tagline: "Handmade string art from the heart of Nepal",
+  tagline: "Crafted string art from the heart of Nepal",
   description:
-    "Dorika crafts handmade string art in Nepal — including custom String Face Art woven from your photo on a 45cm plank. Delivered across Nepal.",
+    "Dorika crafts string art in Nepal — including custom String Face Art woven from your photo on a 45cm plank. Delivered across Nepal.",
   url: resolveSiteUrl(),
 
   contact: {
@@ -34,7 +34,7 @@ export const siteConfig = {
     whatsappPrefill:
       "Hi Dorika, I want to know more about your string art.",
     email: "shopdorika@gmail.com",
-    address: "Khairenitar, Tanahun, Nepal",
+    address: "Pokhara, Nepal",
   },
 
   social: {
@@ -52,13 +52,14 @@ export const siteConfig = {
   // Signature product spec (shown on the Custom Art page)
   customArt: {
     plankSize: "45cm diameter round plank",
-    price: 3500,
-    makingTime: "7–10 days",
+    price: 4600,
+    compareAtPrice: 4900,
+    makingTime: "4–5 days",
   },
 
-  // Google Maps embed for Khairenitar, Tanahun
+  // Google Maps embed for Pokhara, Nepal
   mapEmbed:
-    "https://www.google.com/maps?q=Khairenitar,Tanahun,Nepal&output=embed",
+    "https://www.google.com/maps?q=Pokhara,Nepal&output=embed",
 } as const;
 
 // Build a WhatsApp deep-link with an optional custom message

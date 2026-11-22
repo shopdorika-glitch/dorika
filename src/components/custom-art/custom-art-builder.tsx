@@ -42,6 +42,7 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
   const [token, setToken] = useState("");
   const [hp, setHp] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Restore draft (text fields only — files can't persist)
   useEffect(() => {
@@ -93,11 +94,10 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
     if (file) handleFile(file);
   };
 
-  // Step validation
   const canNext = () => {
     if (step === 0) return !!photoFile;
     if (step === 1)
-      return (
+      return Boolean(
         form.full_name.trim() &&
         isValidNepaliPhone(form.phone) &&
         form.district.trim() &&
@@ -113,7 +113,7 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
     }
     setError(null);
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const back = () => { setError(null); setStep((s) => Math.max(s - 1, 0)); };
 
@@ -145,43 +145,45 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
     }
   };
 
-  // ── Confirmation screen ──────────────────────────────────────
+  // ── Confirmation ─────────────────────────────────────────────
   if (result) {
     const waMsg = `Hi Dorika, I just submitted my String Face Art request. My Order ID is ${result.request_no}.`;
     return (
-      <div className="mx-auto max-w-xl rounded-2xl border border-charcoal-100 bg-white p-8 text-center shadow-card">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <Check className="h-8 w-8 text-green-600" />
-        </div>
-        <h2 className="mt-5 text-2xl font-extrabold">Request received!</h2>
-        <p className="mt-2 text-charcoal-500">
-          Thank you! We&apos;ll review your photo and get in touch shortly.
-        </p>
-        <div className="mt-6 rounded-xl bg-cream-200 p-5">
-          <p className="text-sm text-charcoal-400">Your Order ID</p>
-          <p className="text-2xl font-extrabold tracking-wide text-terracotta-600">
-            {result.request_no}
+      <div className="mx-auto max-w-xl border border-line bg-surface">
+        <div className="border-b border-line px-8 py-10 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-clay/40 text-clay">
+            <Check className="h-5 w-5" strokeWidth={1.75} />
+          </div>
+          <h2 className="mt-5 font-display text-2xl tracking-tight text-ink">Request received</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-ink-soft">
+            Thank you — we will look at your photograph and get in touch shortly to confirm the
+            portrait before we begin.
           </p>
+          <div className="mt-7 border-y border-line py-4">
+            <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+              Your request ID
+            </p>
+            <p className="mt-1 font-mono text-xl tracking-[0.08em] text-clay">{result.request_no}</p>
+          </div>
         </div>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <a
-            href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent(waMsg)}`}
-            target="_blank" rel="noopener noreferrer"
-            className="btn-primary btn-lg flex-1 !bg-whatsapp hover:!brightness-110"
-          >
-            Confirm on WhatsApp
-          </a>
-          <a href={`/track?order=${result.request_no}`} className="btn-outline btn-lg flex-1">
-            Track your order
-          </a>
-        </div>
-        <div className="mt-6 rounded-xl border border-charcoal-100 p-4 text-left text-sm text-charcoal-500">
-          <p className="font-semibold text-charcoal-700">Save your details?</p>
-          <p className="mt-1">
-            Creating an account is optional — it just lets you see your order history later.{" "}
-            <a href="/account/auth/signup" className="font-semibold text-terracotta-600 hover:underline">
-              Create account
+
+        <div className="px-8 py-7">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <a
+              href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent(waMsg)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary btn-md flex-1"
+            >
+              Confirm on WhatsApp
             </a>
+            <a href={`/track?order=${result.request_no}`} className="btn-outline btn-md flex-1">
+              Track your request
+            </a>
+          </div>
+          <p className="mt-4 text-xs leading-relaxed text-ink-muted">
+            Keep this ID — it is all you need to follow the request. Creating an account is
+            optional and only adds the history to your profile.
           </p>
         </div>
       </div>
@@ -189,32 +191,44 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      {/* Progress indicator */}
-      <ol className="mb-8 flex items-center">
-        {STEPS.slice(0, 3).map((label, i) => (
-          <li key={label} className="flex flex-1 items-center last:flex-none">
-            <div className="flex flex-col items-center">
-              <div className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full border-2 font-bold transition",
-                i < step ? "border-terracotta-500 bg-terracotta-500 text-white"
-                  : i === step ? "border-terracotta-500 text-terracotta-600"
-                  : "border-charcoal-200 text-charcoal-300"
-              )}>
-                {i < step ? <Check className="h-5 w-5" /> : i + 1}
+    <div ref={panelRef} className="mx-auto max-w-3xl scroll-mt-28">
+      {/* Stepper */}
+      <ol className="mb-6 grid grid-cols-3 border-y border-line">
+        {STEPS.slice(0, 3).map((label, i) => {
+          const done = i < step;
+          const current = i === step;
+          return (
+            <li key={label} className="relative py-4 pr-4">
+              <span
+                className={cn(
+                  "absolute inset-x-0 bottom-0 h-px origin-left transition-transform duration-500",
+                  done || current ? "scale-x-100 bg-clay" : "scale-x-0 bg-clay"
+                )}
+              />
+              <div className="flex items-baseline gap-2.5">
+                <span
+                  className={cn(
+                    "font-mono text-[0.6875rem] tracking-[0.1em]",
+                    current ? "text-clay" : done ? "text-ink" : "text-ink-faint"
+                  )}
+                >
+                  {done ? <Check className="h-3.5 w-3.5" strokeWidth={2} /> : String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  className={cn(
+                    "text-sm transition-colors",
+                    current ? "text-ink" : done ? "text-ink-soft" : "text-ink-faint"
+                  )}
+                >
+                  {label}
+                </span>
               </div>
-              <span className={cn("mt-1.5 text-xs font-semibold", i <= step ? "text-charcoal-700" : "text-charcoal-300")}>
-                {label}
-              </span>
-            </div>
-            {i < 2 && (
-              <div className={cn("mx-2 h-0.5 flex-1 rounded", i < step ? "bg-terracotta-500" : "bg-charcoal-100")} />
-            )}
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ol>
 
-      <div className="rounded-2xl border border-charcoal-100 bg-white p-6 shadow-soft sm:p-8">
+      <div className="border border-line bg-surface">
         {/* Honeypot */}
         <input
           type="text" tabIndex={-1} autoComplete="off"
@@ -223,218 +237,286 @@ export function CustomArtBuilder({ price, makingTime }: { price: number; makingT
           name={HONEYPOT_FIELD} value={hp} onChange={(e) => setHp(e.target.value)}
         />
 
-        {/* STEP 0 — Photo */}
-        {step === 0 && (
-          <div>
-            <h2 className="text-xl font-bold">Upload your face photo</h2>
-            <p className="mt-1 text-sm text-charcoal-400">
-              A clear, well-lit photo of the face works best. JPG, PNG or WEBP, up to 10MB.
-            </p>
-
-            {!preview ? (
-              <div
-                onDrop={onDrop}
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                onDragLeave={() => setDragOver(false)}
-                onClick={() => fileRef.current?.click()}
-                className={cn(
-                  "mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 text-center transition",
-                  dragOver ? "border-terracotta-500 bg-terracotta-50" : "border-charcoal-200 hover:border-terracotta-300 hover:bg-cream-100"
-                )}
-              >
-                {compressing ? (
-                  <>
-                    <Loader2 className="h-10 w-10 animate-spin text-terracotta-500" />
-                    <p className="mt-3 font-semibold">Optimising your photo…</p>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-terracotta-50 text-terracotta-600">
-                      <ImageIcon className="h-7 w-7" />
-                    </div>
-                    <p className="mt-3 font-semibold">Drag &amp; drop your photo here</p>
-                    <p className="text-sm text-charcoal-400">or tap to browse / use camera</p>
-                    <div className="mt-4 flex gap-2">
-                      <span className="btn-outline btn-sm pointer-events-none"><Upload className="h-4 w-4" /> Browse</span>
-                      <span className="btn-outline btn-sm pointer-events-none"><Camera className="h-4 w-4" /> Camera</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="relative mt-5">
-                <div className="relative mx-auto aspect-square max-w-sm overflow-hidden rounded-2xl bg-cream-200">
-                  <Image src={preview} alt="Your photo preview" fill className="object-cover" sizes="400px" />
-                </div>
-                <button
-                  onClick={() => { setPhotoFile(null); setPreview(null); }}
-                  className="btn-outline btn-sm mx-auto mt-4 flex"
-                >
-                  <X className="h-4 w-4" /> Choose a different photo
-                </button>
-              </div>
-            )}
-
-            <input
-              ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
-              capture="environment" className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-            />
-          </div>
-        )}
-
-        {/* STEP 1 — Details */}
-        {step === 1 && (
-          <div className="space-y-5">
-            <h2 className="text-xl font-bold">Your details</h2>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Full name" required>
-                <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder="Your full name" />
-              </Field>
-              <Field label="Phone" required hint="Nepali mobile number">
-                <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" />
-              </Field>
-            </div>
-
+        <div className="p-6 sm:p-9">
+          {/* STEP 0 — Photo */}
+          {step === 0 && (
             <div>
-              <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-                <input type="checkbox" checked={form.sameWhatsapp}
-                  onChange={(e) => set("sameWhatsapp", e.target.checked)}
-                  className="h-4 w-4 rounded border-charcoal-300 text-terracotta-500" />
-                WhatsApp number same as phone
-              </label>
-              {!form.sameWhatsapp && (
-                <Input value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="WhatsApp number" inputMode="tel" />
+              <h2 className="font-display text-xl tracking-tight text-ink">Upload your face photo</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                A clear, well-lit photo of the face works best. JPG, PNG or WEBP, up to 10MB — it is
+                compressed on your device before it is sent.
+              </p>
+
+              {!preview ? (
+                <div
+                  onDrop={onDrop}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onClick={() => fileRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      fileRef.current?.click();
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Choose a photo to upload"
+                  className={cn(
+                    "mt-6 flex cursor-pointer flex-col items-center justify-center px-6 py-14 text-center transition-colors duration-300",
+                    "border border-dashed",
+                    dragOver
+                      ? "border-clay bg-clay-tint"
+                      : "border-line-strong bg-paper hover:border-clay hover:bg-paper-2"
+                  )}
+                >
+                  {compressing ? (
+                    <>
+                      <Loader2 className="h-7 w-7 animate-spin text-clay" strokeWidth={1.5} />
+                      <p className="mt-4 text-sm text-ink">Optimising your photo…</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-line bg-surface text-ink-soft">
+                        <ImageIcon className="h-5 w-5" strokeWidth={1.25} />
+                      </div>
+                      <p className="mt-4 font-display text-lg tracking-tight text-ink">
+                        Drop your photograph here
+                      </p>
+                      <p className="mt-1 text-sm text-ink-muted">or choose a file from your device</p>
+                      <div className="mt-5 flex flex-wrap justify-center gap-2">
+                        <span className="btn-outline btn-sm pointer-events-none">
+                          <Upload className="h-3.5 w-3.5" strokeWidth={1.5} /> Browse
+                        </span>
+                        <span className="btn-outline btn-sm pointer-events-none">
+                          <Camera className="h-3.5 w-3.5" strokeWidth={1.5} /> Camera
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <div className="relative mx-auto aspect-square w-full max-w-[320px] overflow-hidden bg-paper-2">
+                    <Image src={preview} alt="Your photo preview" fill className="object-cover" sizes="320px" />
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => { setPhotoFile(null); setPreview(null); }}
+                      className="inline-flex items-center gap-1.5 text-xs text-ink-soft underline decoration-line underline-offset-4 hover:text-ink"
+                    >
+                      <X className="h-3 w-3" strokeWidth={1.5} /> Choose a different photo
+                    </button>
+                  </div>
+                </div>
               )}
+
+              <input
+                ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp"
+                capture="environment" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+              />
             </div>
+          )}
 
-            <Field label="Email" hint="For your confirmation (optional)">
-              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" />
-            </Field>
+          {/* STEP 1 — Details */}
+          {step === 1 && (
+            <div className="space-y-5">
+              <div>
+                <h2 className="font-display text-xl tracking-tight text-ink">Your details</h2>
+                <p className="mt-1.5 text-sm text-ink-soft">
+                  Only what we need to make and deliver the piece. No account required.
+                </p>
+              </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="District" required>
-                <Input value={form.district} onChange={(e) => set("district", e.target.value)} placeholder="e.g. Tanahun" />
-              </Field>
-              <Field label="Municipality / City">
-                <Input value={form.municipality} onChange={(e) => set("municipality", e.target.value)} placeholder="e.g. Byas" />
-              </Field>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Ward / Tole">
-                <Input value={form.ward_tole} onChange={(e) => set("ward_tole", e.target.value)} placeholder="Ward no. / tole" />
-              </Field>
-              <Field label="Nearest landmark">
-                <Input value={form.landmark} onChange={(e) => set("landmark", e.target.value)} placeholder="e.g. near Khairenitar bus park" />
-              </Field>
-            </div>
-
-            <Field label="Full delivery address" required>
-              <Textarea value={form.full_address} onChange={(e) => set("full_address", e.target.value)} placeholder="House / street / area details" />
-            </Field>
-
-            <details className="rounded-xl border border-charcoal-100 p-4">
-              <summary className="cursor-pointer font-semibold text-charcoal-700">Optional details</summary>
-              <div className="mt-4 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Alternate contact number">
-                    <Input value={form.alt_phone} onChange={(e) => set("alt_phone", e.target.value)} placeholder="Another number" inputMode="tel" />
-                  </Field>
-                  <Field label="Preferred delivery date">
-                    <Input type="date" value={form.preferred_date} onChange={(e) => set("preferred_date", e.target.value)} />
-                  </Field>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Gift or self">
-                    <Select value={form.gift_or_self} onChange={(e) => set("gift_or_self", e.target.value)}>
-                      <option value="">Select…</option>
-                      <option value="self">For myself</option>
-                      <option value="gift">It&apos;s a gift</option>
-                    </Select>
-                  </Field>
-                  <Field label="Background / frame preference">
-                    <Input value={form.background_pref} onChange={(e) => set("background_pref", e.target.value)} placeholder="e.g. natural wood, black frame" />
-                  </Field>
-                </div>
-                <Field label="Special instructions">
-                  <Textarea value={form.special_instructions} onChange={(e) => set("special_instructions", e.target.value)} placeholder="Anything we should know?" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Full name" required>
+                  <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder="Your full name" autoComplete="name" />
+                </Field>
+                <Field label="Phone" required hint="Nepali mobile number">
+                  <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" autoComplete="tel" />
                 </Field>
               </div>
-            </details>
-          </div>
-        )}
 
-        {/* STEP 2 — Review */}
-        {step === 2 && (
-          <div>
-            <h2 className="text-xl font-bold">Review &amp; submit</h2>
-            <div className="mt-5 grid gap-6 sm:grid-cols-2">
-              {preview && (
-                <div className="relative aspect-square overflow-hidden rounded-2xl bg-cream-200">
-                  <Image src={preview} alt="Your photo" fill className="object-cover" sizes="300px" />
+              <div>
+                <label className="flex items-center gap-2.5 text-sm text-ink-soft">
+                  <input
+                    type="checkbox"
+                    checked={form.sameWhatsapp}
+                    onChange={(e) => set("sameWhatsapp", e.target.checked)}
+                    className="h-4 w-4 rounded-none border-line text-clay accent-[rgb(var(--clay))]"
+                  />
+                  WhatsApp number is the same as my phone
+                </label>
+                {!form.sameWhatsapp && (
+                  <div className="mt-3">
+                    <Field label="WhatsApp number">
+                      <Input value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="WhatsApp number" inputMode="tel" />
+                    </Field>
+                  </div>
+                )}
+              </div>
+
+              <Field label="Email" hint="Optional — for your confirmation">
+                <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" autoComplete="email" />
+              </Field>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="District" required>
+                  <Input value={form.district} onChange={(e) => set("district", e.target.value)} placeholder="e.g. Kaski" />
+                </Field>
+                <Field label="Municipality / city">
+                  <Input value={form.municipality} onChange={(e) => set("municipality", e.target.value)} placeholder="e.g. Byas" />
+                </Field>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Ward / tole">
+                  <Input value={form.ward_tole} onChange={(e) => set("ward_tole", e.target.value)} placeholder="Ward no. / tole" />
+                </Field>
+                <Field label="Nearest landmark">
+                  <Input value={form.landmark} onChange={(e) => set("landmark", e.target.value)} placeholder="e.g. near Lakeside bus park" />
+                </Field>
+              </div>
+
+              <Field label="Full delivery address" required>
+                <Textarea value={form.full_address} onChange={(e) => set("full_address", e.target.value)} placeholder="House / street / area details" />
+              </Field>
+
+              <details className="group border-t border-line pt-4">
+                <summary className="flex cursor-pointer items-center justify-between text-sm text-ink-soft transition-colors hover:text-ink">
+                  Optional details — gift note, framing, timing
+                  <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" strokeWidth={1.5} />
+                </summary>
+                <div className="mt-5 space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Alternate contact number">
+                      <Input value={form.alt_phone} onChange={(e) => set("alt_phone", e.target.value)} placeholder="Another number" inputMode="tel" />
+                    </Field>
+                    <Field label="Preferred delivery date">
+                      <Input type="date" value={form.preferred_date} onChange={(e) => set("preferred_date", e.target.value)} />
+                    </Field>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Field label="Gift or self">
+                      <Select value={form.gift_or_self} onChange={(e) => set("gift_or_self", e.target.value)}>
+                        <option value="">Select…</option>
+                        <option value="self">For myself</option>
+                        <option value="gift">It&apos;s a gift</option>
+                      </Select>
+                    </Field>
+                    <Field label="Background / frame preference">
+                      <Input value={form.background_pref} onChange={(e) => set("background_pref", e.target.value)} placeholder="e.g. natural wood, black frame" />
+                    </Field>
+                  </div>
+                  <Field label="Special instructions">
+                    <Textarea value={form.special_instructions} onChange={(e) => set("special_instructions", e.target.value)} placeholder="Anything we should know?" />
+                  </Field>
                 </div>
-              )}
-              <dl className="space-y-2 text-sm">
-                <Row k="Name" v={form.full_name} />
-                <Row k="Phone" v={form.phone} />
-                <Row k="WhatsApp" v={form.sameWhatsapp ? form.phone : form.whatsapp} />
-                {form.email && <Row k="Email" v={form.email} />}
-                <Row k="District" v={form.district} />
-                {form.municipality && <Row k="City" v={form.municipality} />}
-                <Row k="Address" v={form.full_address} />
-                {form.landmark && <Row k="Landmark" v={form.landmark} />}
-              </dl>
+              </details>
             </div>
+          )}
 
-            <div className="mt-6 rounded-xl bg-cream-200 p-4 text-sm">
-              <div className="flex justify-between"><span className="text-charcoal-500">Plank</span><span className="font-semibold">{siteConfig.customArt.plankSize}</span></div>
-              <div className="flex justify-between"><span className="text-charcoal-500">Making time</span><span className="font-semibold">{makingTime}</span></div>
-              <div className="mt-2 flex justify-between border-t border-charcoal-200 pt-2 text-base">
-                <span className="font-semibold">Price</span>
-                <span className="font-extrabold text-terracotta-600">{formatNPR(price)}</span>
+          {/* STEP 2 — Review */}
+          {step === 2 && (
+            <div>
+              <h2 className="font-display text-xl tracking-tight text-ink">Review &amp; submit</h2>
+              <p className="mt-1.5 text-sm text-ink-soft">
+                Check the details below. We will still confirm the portrait with you before we
+                start winding.
+              </p>
+
+              <div className="mt-6 grid gap-6 sm:grid-cols-[220px_1fr]">
+                {preview && (
+                  <div className="relative aspect-square overflow-hidden bg-paper-2">
+                    <Image src={preview} alt="Your photo" fill className="object-cover" sizes="220px" />
+                  </div>
+                )}
+                <dl className="divide-y divide-line border-y border-line text-sm">
+                  <Row k="Name" v={form.full_name} />
+                  <Row k="Phone" v={form.phone} />
+                  <Row k="WhatsApp" v={form.sameWhatsapp ? form.phone : form.whatsapp} />
+                  {form.email && <Row k="Email" v={form.email} />}
+                  <Row k="District" v={form.district} />
+                  {form.municipality && <Row k="City" v={form.municipality} />}
+                  <Row k="Address" v={form.full_address} />
+                  {form.landmark && <Row k="Landmark" v={form.landmark} />}
+                </dl>
+              </div>
+
+              <dl className="mt-6 divide-y divide-line border-y border-line text-sm">
+                <Row k="Plank" v={siteConfig.customArt.plankSize} />
+                <Row k="Making time" v={makingTime} />
+                <Row k="Price" v={formatNPR(price)} emphasis />
+              </dl>
+
+              <div className="mt-5">
+                <Turnstile onToken={setToken} />
               </div>
             </div>
+          )}
 
-            <div className="mt-5">
-              <Turnstile onToken={setToken} />
-            </div>
-          </div>
-        )}
+          {error && (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="mt-5 border-l-2 border-clay bg-clay-tint px-4 py-3 text-sm text-ink"
+            >
+              {error}
+            </p>
+          )}
+        </div>
 
-        {error && (
-          <p className="mt-5 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">{error}</p>
-        )}
-
-        {/* Nav buttons */}
-        <div className="mt-8 flex items-center justify-between gap-3">
+        {/* Navigation */}
+        <div className="flex items-center justify-between gap-3 border-t border-line px-6 py-4 sm:px-9">
           {step > 0 ? (
-            <button onClick={back} className="btn-ghost btn-md">
-              <ChevronLeft className="h-4 w-4" /> Back
-            </button>
-          ) : <span />}
-
-          {step < 2 ? (
-            <button onClick={next} className="btn-primary btn-lg">
-              Continue <ChevronRight className="h-4 w-4" />
+            <button type="button" onClick={back} className="btn-ghost btn-md group">
+              <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" strokeWidth={1.5} />
+              Back
             </button>
           ) : (
-            <button onClick={submit} disabled={submitting || !token} className="btn-primary btn-lg">
-              {submitting ? <><Loader2 className="h-5 w-5 animate-spin" /> Submitting…</> : "Submit request"}
+            <span className="text-xs text-ink-muted">Step 1 of 3</span>
+          )}
+
+          {step < 2 ? (
+            <button type="button" onClick={next} className="btn-primary btn-md group">
+              Continue
+              <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.5} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={submit}
+              disabled={submitting || !token}
+              className="btn-primary btn-md"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} /> Submitting…
+                </>
+              ) : (
+                <>Submit request · {formatNPR(price)}</>
+              )}
             </button>
           )}
         </div>
       </div>
+
+      <p className="mt-4 text-center text-xs leading-relaxed text-ink-muted">
+        Your photo stays private and is used only to make your artwork.
+      </p>
     </div>
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
+function Row({ k, v, emphasis = false }: { k: string; v: string; emphasis?: boolean }) {
   return (
-    <div className="flex gap-2">
-      <dt className="w-24 flex-shrink-0 text-charcoal-400">{k}</dt>
-      <dd className="font-medium text-charcoal-700">{v || "—"}</dd>
+    <div className="flex items-baseline justify-between gap-4 py-2.5">
+      <dt className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-muted">{k}</dt>
+      <dd className={cn("text-right", emphasis ? "tnum text-base text-clay" : "text-ink")}>
+        {v || "—"}
+      </dd>
     </div>
   );
 }

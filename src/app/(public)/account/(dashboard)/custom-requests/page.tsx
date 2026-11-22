@@ -41,42 +41,42 @@ export default async function AccountCustomRequestsPage() {
             <div key={request.id} className="card p-4 sm:p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-bold text-charcoal-800">{request.request_no}</p>
-                  <p className="mt-0.5 text-xs text-charcoal-400">
+                  <p className="font-medium text-ink">{request.request_no}</p>
+                  <p className="mt-0.5 text-xs text-ink-muted">
                     Requested {formatDate(request.created_at)} · {request.plank_size}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <PaymentBadge status={request.payment_status} />
                   <StatusBadge status={request.status} />
-                  <span className="text-sm font-extrabold text-charcoal-800">
+                  <span className="text-sm font-normal text-ink">
                     {formatNPR(request.price)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-charcoal-500">
+              <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs text-ink-soft">
                 {request.preferred_date && (
                   <span>
-                    <span className="font-semibold text-charcoal-600">Wanted by:</span>{" "}
+                    <span className="font-semibold text-ink-soft">Wanted by:</span>{" "}
                     {request.preferred_date}
                   </span>
                 )}
                 {request.background_pref && (
                   <span>
-                    <span className="font-semibold text-charcoal-600">Background:</span>{" "}
+                    <span className="font-semibold text-ink-soft">Background:</span>{" "}
                     {request.background_pref}
                   </span>
                 )}
                 <span className="inline-flex items-center gap-1">
-                  <ImageIcon className="h-3.5 w-3.5 text-terracotta-400" />
+                  <ImageIcon className="h-3.5 w-3.5 text-clay" />
                   Photo received — visible to the studio only
                 </span>
               </div>
 
               {request.special_instructions && (
-                <p className="mt-3 rounded-lg bg-cream-200 p-3 text-xs leading-relaxed text-charcoal-500">
-                  <span className="font-semibold text-charcoal-700">Instructions:</span>{" "}
+                <p className="mt-3 rounded-xs bg-paper-2 p-3 text-xs leading-relaxed text-ink-soft">
+                  <span className="font-semibold text-ink">Instructions:</span>{" "}
                   {request.special_instructions}
                 </p>
               )}
@@ -85,7 +85,7 @@ export default async function AccountCustomRequestsPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs leading-relaxed text-charcoal-400">
+      <p className="mt-6 text-xs leading-relaxed text-ink-muted">
         Your uploaded photo stays private: it is stored in a locked bucket and only opened by the
         Dorika studio while your piece is being made.
       </p>

@@ -11,10 +11,10 @@ export function PanelHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
       <div>
-        <h1 className="text-2xl font-extrabold sm:text-[28px]">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-charcoal-400">{subtitle}</p>}
+        <h1 className="font-display text-[1.7rem] leading-tight tracking-display text-ink">{title}</h1>
+        {subtitle && <p className="mt-1.5 text-sm text-ink-soft">{subtitle}</p>}
       </div>
       {action}
     </div>
@@ -25,7 +25,6 @@ export function StatTile({
   label,
   value,
   hint,
-  icon,
   href,
 }: {
   label: string;
@@ -36,17 +35,13 @@ export function StatTile({
 }) {
   const body = (
     <>
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-charcoal-400">{label}</p>
-        {icon && <span className="text-terracotta-400">{icon}</span>}
-      </div>
-      <p className="mt-2 text-2xl font-extrabold text-charcoal-800">{value}</p>
-      {hint && <p className="mt-1 text-xs text-charcoal-400">{hint}</p>}
+      <p className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-muted">{label}</p>
+      <p className="mt-2 font-display text-2xl tracking-tight text-ink">{value}</p>
+      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
     </>
   );
 
-  const className =
-    "card block p-4 transition-shadow hover:shadow-card sm:p-5";
+  const className = "block border border-line bg-surface p-4 transition-colors hover:border-line-strong sm:p-5";
 
   return href ? (
     <Link href={href} className={className}>
@@ -65,13 +60,13 @@ export function Notice({
   children: React.ReactNode;
 }) {
   const styles = {
-    success: "border-green-200 bg-green-50 text-green-800",
-    error: "border-red-200 bg-red-50 text-red-700",
-    info: "border-charcoal-200 bg-white text-charcoal-600",
+    success: "border-l-2 border-success bg-success-tint text-success",
+    error: "border-l-2 border-danger bg-danger-tint text-danger",
+    info: "border-l-2 border-line-strong bg-paper-2 text-ink-soft",
   } as const;
 
   return (
-    <div className={cn("mb-4 rounded-xl border px-4 py-3 text-sm font-medium", styles[kind])}>
+    <div role="status" className={cn("mb-4 px-4 py-3 text-sm", styles[kind])}>
       {children}
     </div>
   );
@@ -89,9 +84,9 @@ export function EmptyPanel({
   actionHref?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-charcoal-200 bg-white/60 px-6 py-14 text-center">
-      <h3 className="text-base font-bold text-charcoal-700">{title}</h3>
-      <p className="mx-auto mt-1 max-w-sm text-sm text-charcoal-400">{hint}</p>
+    <div className="border border-dashed border-line-strong px-6 py-14 text-center">
+      <h3 className="font-display text-lg tracking-tight text-ink">{title}</h3>
+      <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-soft">{hint}</p>
       {actionLabel && actionHref && (
         <Link href={actionHref} className="btn-primary btn-md mt-5">
           {actionLabel}
@@ -104,8 +99,8 @@ export function EmptyPanel({
 export function MoneyRow({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-charcoal-500">{label}</span>
-      <span className="font-semibold text-charcoal-700">{formatNPR(value)}</span>
+      <span className="text-ink-soft">{label}</span>
+      <span className="tnum text-ink">{formatNPR(value)}</span>
     </div>
   );
 }

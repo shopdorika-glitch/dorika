@@ -50,7 +50,7 @@ export default async function InvoicePage({ params }: { params: { id: string } }
           <div className="flex items-start justify-between border-b border-charcoal-200 pb-6">
             <div>
               <h1 className="text-3xl font-extrabold text-charcoal-800">{store.name}</h1>
-              <p className="mt-1 text-sm text-terracotta-600">Handmade string art</p>
+              <p className="mt-1 text-sm text-terracotta-600">Crafted string art</p>
               <p className="mt-3 text-xs text-charcoal-500">
                 {store.address}
                 <br />
@@ -123,7 +123,7 @@ export default async function InvoicePage({ params }: { params: { id: string } }
           </div>
 
           <p className="mt-10 text-center text-xs text-charcoal-400">
-            Thank you for supporting handmade. — {store.name}
+            Thank you for supporting craft. — {store.name}
           </p>
         </div>
       </div>

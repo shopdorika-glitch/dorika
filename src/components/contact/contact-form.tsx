@@ -41,52 +41,90 @@ export function ContactForm() {
 
   if (status === "sent") {
     return (
-      <div className="rounded-2xl border border-charcoal-100 bg-white p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
-          <Check className="h-7 w-7 text-green-600" />
+      <div className="border border-line bg-surface">
+        <div className="flex flex-col items-center px-8 py-12 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-clay/40 text-clay">
+            <Check className="h-5 w-5" strokeWidth={1.75} />
+          </div>
+          <h2 className="mt-5 font-display text-2xl tracking-tight text-ink">Message received</h2>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-soft">
+            Thank you — we have your note and will reply soon. If it is urgent, WhatsApp is faster.
+          </p>
+          <button
+            type="button"
+            onClick={() => setStatus("idle")}
+            className="btn-outline btn-md mt-7"
+          >
+            Write another message
+          </button>
         </div>
-        <h3 className="mt-4 text-xl font-bold">Message sent!</h3>
-        <p className="mt-1 text-charcoal-500">Thank you — we&apos;ll get back to you soon.</p>
-        <button onClick={() => setStatus("idle")} className="btn-outline btn-md mt-5">
-          Send another message
-        </button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-charcoal-100 bg-white p-6 shadow-soft sm:p-8">
+    <form onSubmit={submit} className="border border-line bg-surface p-6 sm:p-8">
       <input type="text" tabIndex={-1} autoComplete="off" className="hp-field"
         data-lpignore="true" data-1p-ignore="true" data-form-type="other"
         aria-hidden="true" name={HONEYPOT_FIELD} value={hp} onChange={(e) => setHp(e.target.value)} />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="font-display text-xl tracking-tight text-ink">Send a message</h2>
+        <span className="font-mono text-[0.625rem] uppercase tracking-[0.14em] text-ink-muted">
+          Reply within a day
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <Field label="Name" required>
-          <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Your name" />
+          <Input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Your name" autoComplete="name" />
         </Field>
         <Field label="Phone">
-          <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" />
+          <Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="98XXXXXXXX" inputMode="tel" autoComplete="tel" />
         </Field>
         <Field label="Email">
-          <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" />
+          <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="you@example.com" autoComplete="email" />
         </Field>
         <Field label="Subject">
           <Input value={form.subject} onChange={(e) => set("subject", e.target.value)} placeholder="How can we help?" />
         </Field>
       </div>
+
       <Field label="Message" required className="mt-4">
-        <Textarea value={form.message} onChange={(e) => set("message", e.target.value)} placeholder="Tell us what you need…" className="min-h-[140px]" />
+        <Textarea
+          value={form.message}
+          onChange={(e) => set("message", e.target.value)}
+          placeholder="Tell us what you have in mind…"
+          className="min-h-[150px]"
+        />
       </Field>
 
       <div className="mt-4">
         <Turnstile onToken={setToken} />
       </div>
 
-      {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">{error}</p>}
+      {error && (
+        <p role="alert" aria-live="polite" className="mt-4 border-l-2 border-clay bg-clay-tint px-4 py-3 text-sm text-ink">
+          {error}
+        </p>
+      )}
 
-      <button type="submit" disabled={status === "sending"} className="btn-primary btn-lg mt-5 w-full sm:w-auto">
-        {status === "sending" ? <><Loader2 className="h-5 w-5 animate-spin" /> Sending…</> : <><Send className="h-5 w-5" /> Send message</>}
-      </button>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+        <p className="max-w-[26ch] text-xs leading-relaxed text-ink-muted">
+          We only use your details to answer this message.
+        </p>
+        <button type="submit" disabled={status === "sending"} className="btn-primary btn-md">
+          {status === "sending" ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} /> Sending…
+            </>
+          ) : (
+            <>
+              Send message <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }

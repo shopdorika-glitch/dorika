@@ -46,25 +46,25 @@ export function orderConfirmationHtml(opts: {
   const { orderNo, name, trackUrl, kind } = opts;
   const title = kind === "custom" ? "Custom Art Request Received" : "Order Confirmed";
   return `
-  <div style="font-family:Nunito,Arial,sans-serif;max-width:560px;margin:0 auto;color:#24272B">
-    <div style="background:#24272B;padding:24px;text-align:center;border-radius:12px 12px 0 0">
+  <div style="font-family:Nunito,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1C1C1A">
+    <div style="background:#1C1C1A;padding:24px;text-align:center;border-radius:12px 12px 0 0">
       <h1 style="color:#fff;margin:0;font-size:28px">Dorika</h1>
-      <p style="color:#C55A29;margin:4px 0 0;font-weight:bold">Handmade string art</p>
+      <p style="color:#9C4A2C;margin:4px 0 0;font-weight:bold">Crafted string art</p>
     </div>
     <div style="border:1px solid #eee;border-top:none;padding:28px;border-radius:0 0 12px 12px">
       <h2 style="margin-top:0">${title}</h2>
       <p>Hi ${name},</p>
       <p>Thank you! We've received your ${kind === "custom" ? "custom art request" : "order"}.
       Your reference number is:</p>
-      <p style="font-size:24px;font-weight:bold;color:#C55A29;letter-spacing:1px">${orderNo}</p>
+      <p style="font-size:24px;font-weight:bold;color:#9C4A2C;letter-spacing:1px">${orderNo}</p>
       <p>You can track the status anytime:</p>
       <p>
-        <a href="${trackUrl}" style="display:inline-block;background:#C55A29;color:#fff;
+        <a href="${trackUrl}" style="display:inline-block;background:#9C4A2C;color:#fff;
            text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:bold">
            Track your order
         </a>
       </p>
-      <p style="color:#6b7177;font-size:14px;margin-top:28px">
+      <p style="color:#6A6A63;font-size:14px;margin-top:28px">
         Questions? Reply to this email or WhatsApp us at +977 9708285877.
       </p>
     </div>

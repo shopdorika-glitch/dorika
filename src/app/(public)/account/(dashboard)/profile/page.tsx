@@ -86,10 +86,10 @@ export default async function AccountProfilePage({
 
         <div className="space-y-4">
           <div className="card p-4 sm:p-5">
-            <p className="flex items-center gap-2 text-sm font-bold text-charcoal-800">
-              <KeyRound className="h-4 w-4 text-terracotta-500" /> Password
+            <p className="flex items-center gap-2 text-sm font-medium text-ink">
+              <KeyRound className="h-4 w-4 text-clay" /> Password
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-charcoal-500">
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
               Choose a new password any time — you stay signed in on this device.
             </p>
             <Link href="/account/auth/reset" className="btn-outline btn-sm mt-4 w-full">
@@ -97,13 +97,13 @@ export default async function AccountProfilePage({
             </Link>
           </div>
 
-          <div className="card p-4 text-xs leading-relaxed text-charcoal-400 sm:p-5">
+          <div className="card p-4 text-xs leading-relaxed text-ink-muted sm:p-5">
             <p>
-              <span className="font-semibold text-charcoal-600">Member since:</span>{" "}
+              <span className="font-semibold text-ink-soft">Member since:</span>{" "}
               {formatDate(profile.created_at)}
             </p>
             <p className="mt-1">
-              <span className="font-semibold text-charcoal-600">Account ID:</span>{" "}
+              <span className="font-semibold text-ink-soft">Account ID:</span>{" "}
               <span className="break-all">{profile.id.slice(0, 8)}…</span>
             </p>
           </div>

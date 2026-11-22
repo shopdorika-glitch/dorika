@@ -2,91 +2,369 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+   Dorika — design tokens
+   Warm paper, ink and the terracotta thread from the wordmark.
+   Values are RGB triplets so Tailwind opacity modifiers work.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  --paper: 242 241 238;      /* gallery wall — ivory white, 5% grey */
+  --paper-2: 233 232 227;
+  --paper-3: 225 224 218;
+  --bar: 236 236 231;
+  --surface: 252 251 248;
+
+  --ink: 28 28 26;
+  --ink-soft: 75 75 70;
+  --ink-muted: 106 106 99;
+  --ink-faint: 139 139 130;
+
+  --line: 227 226 219;
+  --line-strong: 206 205 196;
+
+  --clay: 150 67 42;         /* rust — the one warm note, used for accents and the primary action */
+  --clay-deep: 120 51 31;
+  --clay-tint: 245 232 226;
+  --clay-ondeep: 205 138 114;
+
+  --btn: 150 67 42;
+  --btn-ink: 253 250 246;
+
+  --deep: 24 23 20;
+  --on-deep: 246 245 240;
+  --on-deep-soft: 187 185 176;
+
+  --success: 56 92 68;
+  --success-tint: 230 238 231;
+  --danger: 172 46 34;
+  --danger-tint: 249 233 230;
+
+  --ease-out: cubic-bezier(0.16, 0.84, 0.24, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper: 22 21 19;
+  --paper-2: 30 29 26;
+  --paper-3: 38 37 33;
+  --bar: 38 37 32;
+  --surface: 27 26 23;
+
+  --ink: 239 237 231;
+  --ink-soft: 202 199 191;
+  --ink-muted: 159 156 147;
+  --ink-faint: 126 124 116;
+
+  --line: 53 51 45;
+  --line-strong: 73 71 63;
+
+  --clay: 208 126 96;
+  --clay-deep: 226 150 120;
+  --clay-tint: 45 33 28;
+  --clay-ondeep: 208 126 96;
+
+  --btn: 240 236 228;
+  --btn-ink: 26 25 22;
+
+  --deep: 13 13 11;
+  --on-deep: 244 242 236;
+  --on-deep-soft: 177 174 165;
+
+  --success: 150 190 152;
+  --success-tint: 30 40 32;
+  --danger: 226 138 120;
+  --danger-tint: 46 30 26;
+}
+
 @layer base {
-  :root {
-    --brand-charcoal: #24272b;
-    --brand-terracotta: #c55a29;
+  *,
+  ::before,
+  ::after {
+    border-color: rgb(var(--line));
   }
 
   html {
+    overflow-x: clip;
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
-    @apply bg-cream-100 text-charcoal-700 antialiased;
-    font-feature-settings: "cv11", "ss01";
+    @apply bg-paper text-ink antialiased;
+    overflow-x: clip;
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
   }
 
   h1, h2, h3, h4, h5 {
-    @apply font-display text-charcoal-800;
+    @apply font-display font-normal text-ink;
     text-wrap: balance;
   }
 
-  ::selection {
-    @apply bg-terracotta-200 text-charcoal-800;
+  p {
+    text-wrap: pretty;
   }
 
-  /* Nicer focus rings for accessibility */
+  ::selection {
+    @apply bg-clay-tint text-ink;
+  }
+
   :focus-visible {
-    @apply outline-none ring-2 ring-terracotta-400 ring-offset-2 ring-offset-white;
+    outline: 2px solid rgb(var(--clay));
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* Understated scrollbar that matches the paper canvas. */
+  @supports (scrollbar-width: thin) {
+    html { scrollbar-width: thin; scrollbar-color: rgb(var(--line-strong)) transparent; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+
+    /* Stop movement, keep feedback: colour, borders and opacity still ease. */
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+    .frame-lift,
+    .btn .btn-arrow,
+    .route-enter,
+    .reveal {
+      transition-duration: 0.001ms !important;
+      transform: none !important;
+    }
+    /* Feedback without travel: a restrained scale, still eased. */
+    .zoom-slow {
+      transition-duration: 600ms !important;
+    }
+    .group:hover .zoom-slow,
+    .group:focus-within .zoom-slow {
+      transform: scale(1.04) !important;
+    }
+    .reveal { opacity: 1 !important; }
   }
 }
 
 @layer components {
+  /* Layout shell — one consistent measure across the site. */
+  .shell {
+    @apply mx-auto w-full px-5 sm:px-8 lg:px-12;
+    max-width: 1680px;
+  }
   .container-page {
-    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+    @apply shell;
   }
 
+  /* ── Type helpers ─────────────────────────────────────────── */
+  .eyebrow {
+    @apply font-mono text-micro font-medium uppercase text-ink-muted;
+  }
+
+  .display-1 {
+    @apply font-display text-[clamp(2.6rem,5.6vw,4.6rem)] leading-[1.02] tracking-display;
+  }
+  .display-2 {
+    @apply font-display text-[clamp(2rem,3.6vw,3.2rem)] leading-[1.06] tracking-display;
+  }
+  .display-3 {
+    @apply font-display text-[clamp(1.5rem,2.4vw,2.1rem)] leading-[1.15] tracking-display;
+  }
+  .lede {
+    @apply text-lede text-ink-soft;
+  }
+  .figure {
+    @apply font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-muted;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold
-           transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2
-           disabled:cursor-not-allowed disabled:opacity-60;
+    @apply relative inline-flex select-none items-center justify-center gap-2.5 rounded-xs
+           font-sans text-[0.8125rem] font-medium uppercase tracking-[0.1em]
+           transition-all duration-300 ease-out
+           disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-terracotta-500 text-white hover:bg-terracotta-600 active:scale-[0.98]
-           shadow-soft hover:shadow-card;
+    @apply btn px-6 py-[0.95rem] hover:shadow-lift;
+    background-color: rgb(var(--btn));
+    color: rgb(var(--btn-ink));
+  }
+  .btn-primary:hover {
+    background-color: rgb(var(--clay-deep));
+    color: #fff;
   }
   .btn-dark {
-    @apply btn bg-charcoal-700 text-white hover:bg-charcoal-800 active:scale-[0.98];
+    @apply btn bg-deep px-6 py-[0.95rem] text-ondeep hover:bg-ink;
   }
   .btn-outline {
-    @apply btn border-2 border-charcoal-200 bg-white text-charcoal-700 hover:border-terracotta-400 hover:text-terracotta-600;
+    @apply btn border border-line-strong bg-transparent px-6 py-[0.95rem] text-ink
+           hover:border-ink hover:bg-surface;
   }
   .btn-ghost {
-    @apply btn text-charcoal-600 hover:bg-charcoal-50 hover:text-charcoal-800;
+    @apply btn px-2 py-2 text-ink-soft hover:text-ink;
   }
-  .btn-sm { @apply px-4 py-2 text-sm; }
-  .btn-md { @apply px-5 py-2.5 text-sm; }
-  .btn-lg { @apply px-7 py-3.5 text-base; }
+  .btn-sm { @apply px-4 py-2.5 text-[0.6875rem]; }
+  .btn-md { @apply px-5 py-3 text-[0.75rem]; }
+  .btn-lg { @apply px-7 py-4 text-[0.8125rem]; }
 
+  /* Arrow nudge used on primary CTAs. */
+  .btn .btn-arrow {
+    @apply transition-transform duration-300 ease-out;
+  }
+  .btn:hover .btn-arrow { transform: translateX(3px); }
+
+  /* Text link with a thread-like underline that draws in on hover. */
+  .link-thread {
+    @apply relative inline-flex items-center gap-1.5 text-ink transition-colors duration-200;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 calc(100% - 0.05em);
+    transition: background-size 0.35s var(--ease-out), color 0.2s ease;
+  }
+  .link-thread:hover { background-size: 100% 1px; }
+  .link-thread.is-static { background-size: 100% 1px; }
+
+  /* ── Forms ────────────────────────────────────────────────── */
   .input {
-    @apply w-full rounded-xl border border-charcoal-200 bg-white px-4 py-2.5 text-charcoal-800
-           placeholder:text-charcoal-300 transition focus:border-terracotta-400
-           focus:ring-2 focus:ring-terracotta-100;
+    @apply w-full rounded-xs border border-line bg-surface px-4 py-3 text-[0.9375rem] text-ink
+           placeholder:text-ink-faint
+           transition-colors duration-200
+           hover:border-line-strong
+           focus:border-clay focus:outline-none focus:ring-0;
   }
   .label {
-    @apply mb-1.5 block text-sm font-semibold text-charcoal-700;
+    @apply mb-2 block font-mono text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-ink-muted;
   }
+
+  /* ── Surfaces ─────────────────────────────────────────────── */
   .card {
-    @apply rounded-2xl border border-charcoal-100 bg-white shadow-soft;
+    @apply rounded-xs border border-line bg-surface;
+  }
+  .panel {
+    @apply border border-line bg-surface;
   }
 
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-flex items-center gap-1.5 rounded-xs px-2 py-1 font-mono text-[0.6875rem]
+           uppercase tracking-[0.1em];
   }
 
   .section {
-    @apply py-16 sm:py-20 lg:py-24;
+    @apply py-16 sm:py-20 lg:py-28;
   }
-  .eyebrow {
-    @apply text-sm font-bold uppercase tracking-widest text-terracotta-500;
+  .section-tight {
+    @apply py-12 sm:py-16 lg:py-20;
   }
+
+  /* Policy pages — semantic HTML from the content files, styled once here. */
+  .legal-prose strong {
+    @apply font-medium text-ink;
+  }
+  .legal-prose a {
+    @apply text-ink underline decoration-line-strong underline-offset-2 transition-colors hover:decoration-clay;
+  }
+  .legal-prose ul {
+    @apply space-y-2;
+  }
+  .legal-prose li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  .legal-prose li::before {
+    content: "";
+    position: absolute;
+    left: 0.1rem;
+    top: 0.72em;
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background-color: rgb(var(--clay) / 0.6);
+  }
+  .rule {
+    @apply h-px w-full bg-line;
+  }
+
+  /* Image mat: every photograph sits on the same warm paper with a hairline. */
+  .mat {
+    @apply relative overflow-hidden bg-paper-2;
+  }
+  .mat::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 border border-ink/5;
+  }
+
+  .ticks::before { top: -1px; left: -1px; border-top: 1px solid; border-left: 1px solid; }
+  .ticks::after { bottom: -1px; right: -1px; border-bottom: 1px solid; border-right: 1px solid; }
+
+  .paper-grain {
+    position: relative;
+  }
+  .paper-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  }
+  [data-theme="dark"] .paper-grain::after { mix-blend-mode: screen; opacity: 0.22; }
 }
+
+  /* Catalogue photography: a slow forward zoom with a soft lift on the frame. */
+  .frame-lift {
+    transition: transform 900ms var(--ease-out), box-shadow 900ms var(--ease-out);
+  }
+  .group:hover .frame-lift,
+  .group:focus-within .frame-lift {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 55px -38px rgb(24 22 19 / 0.55);
+  }
+  .zoom-slow {
+    transition: transform 1600ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .group:hover .zoom-slow,
+  .group:focus-within .zoom-slow {
+    transform: scale(1.08);
+  }
+
+  /* Highlighter for clauses that carry legal weight. */
+  .hl-blush {
+    background-color: #f5e8e2;
+    color: #1c1c1a;
+    padding: 0 0.18em;
+    border-radius: 2px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .hl-blush--display {
+    position: relative;
+    z-index: 1;
+    padding: 0 0.06em;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .hl-blush--pink {
+    background-color: #ffd9e6;
+    z-index: 2;
+  }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .tnum { font-variant-numeric: tabular-nums; }
 
   /* Honeypot — visually hidden but present in the DOM for bots */
   .hp-field {
@@ -97,5 +375,45 @@
     height: 1px;
     opacity: 0;
     pointer-events: none;
+  }
+
+  /* Scroll reveal — driven by the Reveal component. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.9s var(--ease-out) var(--reveal-delay, 0ms),
+      transform 0.9s var(--ease-out) var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* Route transition applied by the public template. */
+  .route-enter {
+    animation: route-enter 0.55s var(--ease-out) both;
+  }
+  @keyframes route-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .hide-scrollbar { scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Loading placeholder — a quiet breath of paper, never a neon shimmer. */
+  .skeleton {
+    background-color: rgb(var(--paper-2));
+    animation: skeleton-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
   }
 }

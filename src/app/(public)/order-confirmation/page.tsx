@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Package, UserPlus } from "lucide-react";
+import { Check, Package, ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/lib/config";
 import { getSettings } from "@/lib/queries";
 
@@ -25,79 +25,104 @@ export default async function OrderConfirmationPage({
   );
 
   return (
-    <div className="bg-cream-100">
-      <div className="container-page flex min-h-[70vh] items-center justify-center py-16">
-        <div className="mx-auto max-w-xl rounded-2xl border border-charcoal-100 bg-white p-8 text-center shadow-card">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <Check className="h-8 w-8 text-green-600" />
+    <div className="bg-paper">
+      <div className="shell max-w-3xl py-14 lg:py-20">
+        <div className="text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-clay/40 text-clay">
+            <Check className="h-5 w-5" strokeWidth={1.75} />
           </div>
-          <h1 className="mt-5 text-3xl font-extrabold">Thank you for your order!</h1>
-          <p className="mt-2 text-charcoal-500">
-            We&apos;ve received your order and will confirm it shortly.
+          <p className="eyebrow mt-6">Order placed</p>
+          <h1 className="display-2 mt-3">Thank you — your order is with us</h1>
+          <p className="mx-auto mt-4 max-w-md text-ink-soft">
+            We have your details. Someone from the workshop will call to confirm before anything is
+            packed.
           </p>
 
           {orderNo && (
-            <div className="mt-6 rounded-xl bg-cream-200 p-5">
-              <p className="text-sm text-charcoal-400">Your Order ID</p>
-              <p className="text-2xl font-extrabold tracking-wide text-terracotta-600">{orderNo}</p>
-            </div>
-          )}
-
-          {hasManualPayment && (
-            <div className="mt-6 rounded-xl border border-charcoal-100 p-4 text-left">
-              <p className="font-semibold text-charcoal-800">Paying by eSewa / Khalti / bank transfer?</p>
-              <div className="mt-2 space-y-1 text-sm text-charcoal-500">
-                {settings?.esewa_id && (
-                  <p>eSewa: <span className="font-mono font-semibold text-charcoal-800">{settings.esewa_id}</span></p>
-                )}
-                {settings?.khalti_id && (
-                  <p>Khalti: <span className="font-mono font-semibold text-charcoal-800">{settings.khalti_id}</span></p>
-                )}
-                {settings?.bank_account_number && (
-                  <p>
-                    {settings.bank_name ?? "Bank"}:{" "}
-                    <span className="font-mono font-semibold text-charcoal-800">
-                      {settings.bank_account_number}
-                    </span>
-                    {settings.bank_account_name ? ` (${settings.bank_account_name})` : ""}
-                  </p>
-                )}
-                {settings?.payment_note && <p className="text-xs">{settings.payment_note}</p>}
-              </div>
-              <p className="mt-2 text-xs text-charcoal-400">
-                Send the screenshot and your order ID on WhatsApp so we can confirm it faster.
+            <div className="mx-auto mt-8 inline-block border-y border-line px-10 py-4">
+              <p className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+                Your order ID
               </p>
+              <p className="mt-1 font-mono text-xl tracking-[0.08em] text-clay">{orderNo}</p>
             </div>
           )}
+        </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <a
-              href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent(waMsg)}`}
-              target="_blank" rel="noopener noreferrer"
-              className="btn-primary btn-lg flex-1 !bg-whatsapp hover:!brightness-110"
-            >
-              Confirm on WhatsApp
-            </a>
-            <Link href={`/track?order=${orderNo}`} className="btn-outline btn-lg flex-1">
-              <Package className="h-4 w-4" /> Track your order
-            </Link>
-          </div>
+        {/* What happens next */}
+        <ol className="mt-12 grid gap-6 border-t border-line pt-8 sm:grid-cols-3">
+          {[
+            { t: "We confirm", d: "A call or WhatsApp message to check the details and payment." },
+            { t: "We make it", d: "Your piece is packed — or woven, if it is a portrait." },
+            { t: "It travels", d: "Courier to your district. Follow it any time with your ID." },
+          ].map((s, i) => (
+            <li key={s.t}>
+              <p className="font-mono text-[0.6875rem] tracking-[0.12em] text-clay">
+                {String(i + 1).padStart(2, "0")}
+              </p>
+              <p className="mt-2 font-display text-lg tracking-tight text-ink">{s.t}</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-soft">{s.d}</p>
+            </li>
+          ))}
+        </ol>
 
-          {/* Soft, optional account prompt */}
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-charcoal-100 p-4 text-left">
-            <UserPlus className="mt-0.5 h-5 w-5 flex-shrink-0 text-terracotta-500" />
-            <p className="text-sm text-charcoal-500">
-              <span className="font-semibold text-charcoal-700">Want to save your details?</span>{" "}
-              Creating an account is optional — it lets you see your order history and
-              reuse your address next time.{" "}
-              <Link href="/account/auth/signup" className="font-semibold text-terracotta-600 hover:underline">
-                Create account
-              </Link>
+        {hasManualPayment && (
+          <div className="mt-10 border border-line bg-surface p-6">
+            <p className="font-display text-lg tracking-tight text-ink">
+              Paying by eSewa, Khalti or bank transfer?
+            </p>
+            <div className="mt-3 space-y-1 text-sm text-ink-soft">
+              {settings?.esewa_id && (
+                <p>eSewa: <span className="font-mono text-ink">{settings.esewa_id}</span></p>
+              )}
+              {settings?.khalti_id && (
+                <p>Khalti: <span className="font-mono text-ink">{settings.khalti_id}</span></p>
+              )}
+              {settings?.bank_account_number && (
+                <p>
+                  {settings.bank_name ?? "Bank"}:{" "}
+                  <span className="font-mono text-ink">{settings.bank_account_number}</span>
+                  {settings.bank_account_name ? ` (${settings.bank_account_name})` : ""}
+                </p>
+              )}
+              {settings?.payment_note && <p className="text-xs">{settings.payment_note}</p>}
+            </div>
+            <p className="mt-3 text-xs leading-relaxed text-ink-muted">
+              Send the screenshot and your order ID on WhatsApp so we can confirm it faster.
             </p>
           </div>
+        )}
 
-          <Link href="/shop" className="btn-ghost btn-md mt-6">
-            Continue shopping
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            href={`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodeURIComponent(waMsg)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary btn-md flex-1"
+          >
+            Confirm on WhatsApp
+          </a>
+          <Link href={`/track?order=${orderNo}`} className="btn-outline btn-md flex-1">
+            <Package className="h-4 w-4" strokeWidth={1.5} /> Track your order
+          </Link>
+        </div>
+
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-line pt-6 sm:flex-row sm:items-center">
+          <p className="max-w-sm text-xs leading-relaxed text-ink-muted">
+            Want the order saved to an account? It is optional — an account only adds order history
+            and saved addresses.
+          </p>
+          <Link href="/account/auth/signup" className="group inline-flex items-center gap-1.5 text-sm text-ink">
+            <span className="link-thread">Create an account</span>
+            <ArrowUpRight
+              className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              strokeWidth={1.5}
+            />
+          </Link>
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link href="/shop" className="text-sm text-ink-soft link-thread hover:text-ink">
+            Continue browsing
           </Link>
         </div>
       </div>

@@ -6,7 +6,9 @@ import { getProductBySlug, getRelatedProducts, getAllProductSlugs } from "@/lib/
 import { ProductDetailClient } from "@/components/product/product-detail-client";
 import { ProductCard } from "@/components/product-card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { Reveal } from "@/components/ui/reveal";
 import { productImage } from "@/lib/config";
+import { faqItems } from "@/lib/faq";
 
 export const revalidate = 30;
 
@@ -29,34 +31,61 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
+const pickFaq = (prefix: string) => faqItems.find((i) => i.q.startsWith(prefix));
+
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
   const related = await getRelatedProducts(product.category_id, product.id, 4);
 
-  return (
-    <div className="bg-white">
-      <div className="container-page py-6">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-1.5 text-sm text-charcoal-400" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-terracotta-600">Home</Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <Link href="/shop" className="hover:text-terracotta-600">Shop</Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <span className="truncate text-charcoal-600">{product.name}</span>
-        </nav>
+  const detailFaqs = [
+    pickFaq("Do you deliver outside"),
+    pickFaq("Can I return"),
+    product.is_custom ? pickFaq("Are my uploaded photos") : pickFaq("How do I pay"),
+  ].filter((i): i is { q: string; a: string } => Boolean(i));
 
-        <ProductDetailClient product={product} />
+  return (
+    <div className="bg-paper">
+      <div className="shell pt-6 lg:pt-8">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-muted">
+          <Link href="/" className="hover:text-ink">Home</Link>
+          <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
+          <Link href="/shop" className="hover:text-ink">Shop</Link>
+          {product.category?.name && (
+            <>
+              <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
+              <Link href={`/shop?category=${product.category.slug}`} className="hover:text-ink">
+                {product.category.name}
+              </Link>
+            </>
+          )}
+          <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
+          <span className="truncate text-ink">{product.name}</span>
+        </nav>
+      </div>
+
+      <div className="shell pb-16 pt-8 lg:pb-24 lg:pt-12">
+        <ProductDetailClient product={product} detailFaqs={detailFaqs} />
       </div>
 
       {related.length > 0 && (
-        <section className="section bg-cream-100">
-          <div className="container-page">
-            <SectionHeading eyebrow="You may also like" title="Related products" />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
+        <section className="section border-t border-line bg-paper">
+          <div className="shell">
+            <SectionHeading
+              eyebrow="You may also like"
+              title="More from the workshop"
+              action={
+                <Link href="/shop" className="link-thread hidden text-sm sm:inline-flex">
+                  View all pieces
+                </Link>
+              }
+            />
+            <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((p, i) => (
+                <Reveal key={p.id} delay={i * 60}>
+                  <ProductCard product={p} />
+                </Reveal>
               ))}
             </div>
           </div>

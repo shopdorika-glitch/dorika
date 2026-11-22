@@ -1,19 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito, Quicksand } from "next/font/google";
+import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { siteConfig } from "@/lib/config";
 
-const nunito = Nunito({
+const display = Fraunces({
   subsets: ["latin"],
-  variable: "--font-nunito",
+  variable: "--font-display",
+  display: "swap",
+  axes: ["SOFT", "WONK", "opsz"],
+});
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
   display: "swap",
 });
-const quicksand = Quicksand({
+const mono = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-quicksand",
+  variable: "--font-mono",
   display: "swap",
-  weight: ["500", "600", "700"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -24,13 +30,11 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "string art", "Nepal", "custom face art", "handmade", "Dorika",
-    "wall art Nepal", "personalised gift Nepal", "Tanahun",
+    "string art", "Nepal", "custom face art", "crafted", "Dorika",
+    "wall art Nepal", "personalised gift Nepal", "Pokhara",
   ],
   icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     type: "website",
@@ -49,16 +53,45 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#24272B",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F8F7F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#161513" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
+
+/**
+ * Applies the stored theme before paint so there is no flash of the wrong
+ * canvas. Admin keeps the light studio palette regardless of the preference.
+ */
+const themeScript = `
+(function () {
+  try {
+    if (location.pathname.indexOf('/admin') === 0) {
+      document.documentElement.setAttribute('data-theme', 'light');
+      return;
+    }
+    var stored = localStorage.getItem('dorika-theme');
+    var theme = stored === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch (e) {}
+})();
+`;
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${nunito.variable} ${quicksand.variable}`}>
+    <html
+      lang="en"
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

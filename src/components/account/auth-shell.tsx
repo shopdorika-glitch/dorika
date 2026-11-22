@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Database } from "lucide-react";
 
-// Shared card shell for /account/auth/* pages.
+// Shared frame for /account/auth/* pages.
 export function AuthShell({
   eyebrow,
   title,
@@ -16,23 +16,25 @@ export function AuthShell({
   below?: React.ReactNode;
 }) {
   return (
-    <div className="bg-cream-200">
-      <div className="container-page flex min-h-[72vh] items-center justify-center py-14">
+    <div className="bg-paper-2">
+      <div className="shell flex min-h-[72vh] items-center justify-center py-14">
         <div className="w-full max-w-md">
-          <div className="card p-7 sm:p-8">
+          <div className="border border-line bg-surface p-7 sm:p-9">
             <p className="eyebrow">{eyebrow}</p>
-            <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl">{title}</h1>
-            <p className="mt-2 text-sm text-charcoal-400">{subtitle}</p>
+            <h1 className="mt-3 font-display text-[1.9rem] leading-tight tracking-display text-ink">
+              {title}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">{subtitle}</p>
             <div className="mt-6">{children}</div>
           </div>
-          {below && <div className="mt-5">{below}</div>}
-          <p className="mt-6 text-center text-xs text-charcoal-400">
+          {below && <div className="mt-4">{below}</div>}
+          <p className="mt-6 text-center text-xs leading-relaxed text-ink-muted">
             An account is always optional —{" "}
-            <Link href="/shop" className="font-semibold text-terracotta-600 hover:underline">
+            <Link href="/shop" className="text-ink link-thread">
               keep shopping as a guest
             </Link>{" "}
             or{" "}
-            <Link href="/track" className="font-semibold text-terracotta-600 hover:underline">
+            <Link href="/track" className="text-ink link-thread">
               track an order
             </Link>
             .
@@ -46,7 +48,7 @@ export function AuthShell({
 export function FormError({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+    <div role="alert" className="mb-4 border-l-2 border-danger bg-danger-tint px-4 py-3 text-sm text-danger">
       {message}
     </div>
   );
@@ -55,7 +57,7 @@ export function FormError({ message }: { message: string | null }) {
 export function FormSuccess({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+    <div role="status" className="mb-4 border-l-2 border-success bg-success-tint px-4 py-3 text-sm text-success">
       {message}
     </div>
   );
@@ -64,16 +66,16 @@ export function FormSuccess({ message }: { message: string | null }) {
 // Shown when NEXT_PUBLIC_SUPABASE_* is missing, so nobody hits a crash.
 export function SupabaseSetupNotice() {
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-      <p className="flex items-center gap-2 font-bold">
-        <Database className="h-4 w-4" /> Accounts are not switched on yet
+    <div className="border-l-2 border-clay bg-clay-tint p-4 text-sm text-ink">
+      <p className="flex items-center gap-2 font-medium">
+        <Database className="h-4 w-4" strokeWidth={1.5} /> Accounts are not switched on yet
       </p>
-      <p className="mt-2 leading-relaxed">
-        Add <code className="rounded bg-white/70 px-1">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-        <code className="rounded bg-white/70 px-1">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to{" "}
-        <code className="rounded bg-white/70 px-1">.env.local</code>, run the SQL in{" "}
-        <code className="rounded bg-white/70 px-1">supabase/</code>, then restart the server.
-        Shopping, checkout and order tracking keep working without it.
+      <p className="mt-2 leading-relaxed text-ink-soft">
+        Add <code className="bg-surface px-1 font-mono text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+        <code className="bg-surface px-1 font-mono text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to{" "}
+        <code className="bg-surface px-1 font-mono text-xs">.env.local</code>, run the SQL in{" "}
+        <code className="bg-surface px-1 font-mono text-xs">supabase/</code>, then restart the
+        server. Shopping, checkout and order tracking keep working without it.
       </p>
     </div>
   );

@@ -15,10 +15,11 @@ const variants = {
 const sizes = { sm: "btn-sm", md: "btn-md", lg: "btn-lg" };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", ...props }, ref) => (
+  ({ className, variant = "primary", size = "md", type = "button", ...props }, ref) => (
     <button
       ref={ref}
-      className={cn(variants[variant], sizes[size], className)}
+      type={type}
+      className={cn("group", variants[variant], sizes[size], className)}
       {...props}
     />
   )

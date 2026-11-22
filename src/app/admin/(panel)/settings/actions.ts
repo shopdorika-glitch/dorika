@@ -12,7 +12,8 @@ function text(value: FormDataEntryValue | null): string | null {
 export async function saveSettings(formData: FormData) {
   const supabase = createClient();
 
-  const payload = {
+  // Core settings — columns that always exist in the base schema.
+  const core = {
     store_name: String(formData.get("store_name") ?? "").trim(),
     store_email: String(formData.get("store_email") ?? "").trim(),
     store_phone: String(formData.get("store_phone") ?? "").trim(),
@@ -29,8 +30,12 @@ export async function saveSettings(formData: FormData) {
     esewa_enabled: formData.get("esewa_enabled") === "on",
     khalti_enabled: formData.get("khalti_enabled") === "on",
     bank_enabled: formData.get("bank_enabled") === "on",
-    // Manual payment destinations — blank strings become null so checkout
-    // can treat "not configured" and "cleared" the same way.
+  };
+
+  // Manual payment destinations — these live in the optional 04_payments.sql
+  // migration. Blank strings become null so checkout can treat "not
+  // configured" and "cleared" the same way.
+  const payments = {
     esewa_id: text(formData.get("esewa_id")),
     khalti_id: text(formData.get("khalti_id")),
     bank_name: text(formData.get("bank_name")),
@@ -40,7 +45,32 @@ export async function saveSettings(formData: FormData) {
     payment_note: text(formData.get("payment_note")),
   };
 
-  await supabase.from("settings").update(payload).eq("id", 1);
+  // Try to save everything at once (works once 04_payments.sql has been run).
+  const full = await supabase
+    .from("settings")
+    .update({ ...core, ...payments })
+    .eq("id", 1);
+
+  if (full.error) {
+    // If the payment columns don't exist yet (migration not applied), the
+    // whole update is rejected. Fall back to saving just the core settings
+    // so the rest of the form still works. PostgREST reports a missing
+    // column with code PGRST204 / "schema cache" in the message.
+    const missingColumn =
+      full.error.code === "PGRST204" ||
+      /column|schema cache/i.test(full.error.message);
+
+    if (!missingColumn) {
+      throw new Error(`Failed to save settings: ${full.error.message}`);
+    }
+
+    const coreOnly = await supabase.from("settings").update(core).eq("id", 1);
+    if (coreOnly.error) {
+      throw new Error(`Failed to save settings: ${coreOnly.error.message}`);
+    }
+    // Core saved; payment fields were skipped because the migration is
+    // pending. Not fatal — the storefront works without them.
+  }
 
   // Settings feed the homepage hero, delivery fees, etc.
   revalidatePath("/admin/settings");

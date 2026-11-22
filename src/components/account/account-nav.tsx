@@ -2,22 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  Palette,
-  MapPin,
-  User,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/account", label: "Overview", icon: LayoutDashboard },
-  { href: "/account/orders", label: "Orders", icon: ShoppingBag },
-  { href: "/account/custom-requests", label: "Custom Art", icon: Palette },
-  { href: "/account/addresses", label: "Addresses", icon: MapPin },
-  { href: "/account/profile", label: "Profile", icon: User },
+  { href: "/account", label: "Overview" },
+  { href: "/account/orders", label: "Orders" },
+  { href: "/account/custom-requests", label: "Custom art" },
+  { href: "/account/addresses", label: "Addresses" },
+  { href: "/account/profile", label: "Profile" },
 ] as const;
 
 export function AccountNav({
@@ -33,56 +26,62 @@ export function AccountNav({
   const initial = (name || email || "?").trim().charAt(0).toUpperCase();
 
   return (
-    <div className="lg:sticky lg:top-24">
-      <div className="card overflow-hidden">
-        <div className="flex items-center gap-3 border-b border-charcoal-100 p-4">
-          <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-terracotta-100 text-sm font-extrabold text-terracotta-700">
+    <div className="lg:sticky lg:top-28">
+      <div className="border border-line bg-surface">
+        <div className="flex items-center gap-3 border-b border-line p-4">
+          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-line font-mono text-xs text-clay">
             {initial}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold text-charcoal-800">{name || "Dorika customer"}</p>
-            <p className="truncate text-xs text-charcoal-400" title={email}>
+            <p className="truncate text-sm text-ink">{name || "Dorika customer"}</p>
+            <p className="truncate text-xs text-ink-muted" title={email}>
               {email}
             </p>
           </div>
         </div>
 
-        <nav className="flex gap-1 overflow-x-auto p-2 no-scrollbar lg:flex-col">
+        <nav aria-label="Account" className="flex gap-1 overflow-x-auto p-2 no-scrollbar lg:flex-col">
           {NAV.map((item) => {
             const active =
               item.href === "/account" ? pathname === "/account" : pathname?.startsWith(item.href);
-            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-shrink-0 items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                  "flex flex-shrink-0 items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors",
                   active
-                    ? "bg-terracotta-500 text-white"
-                    : "text-charcoal-600 hover:bg-cream-200 hover:text-charcoal-800"
+                    ? "bg-paper-2 text-ink"
+                    : "text-ink-soft hover:bg-paper-2 hover:text-ink"
                 )}
               >
-                <Icon className="h-[18px] w-[18px]" />
                 <span className="whitespace-nowrap">{item.label}</span>
+                <span
+                  className={cn(
+                    "hidden h-px w-4 bg-clay transition-opacity lg:block",
+                    active ? "opacity-100" : "opacity-0"
+                  )}
+                  aria-hidden="true"
+                />
               </Link>
             );
           })}
         </nav>
 
-        <form action={signOut} className="border-t border-charcoal-100 p-2">
+        <form action={signOut} className="border-t border-line p-2">
           <button
             type="submit"
-            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-charcoal-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-ink-muted transition-colors hover:bg-paper-2 hover:text-ink"
           >
-            <LogOut className="h-[18px] w-[18px]" /> Sign out
+            <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} /> Sign out
           </button>
         </form>
       </div>
 
       <Link
         href="/shop"
-        className="mt-3 hidden items-center justify-center gap-2 rounded-xl border border-dashed border-charcoal-200 px-3 py-2.5 text-sm font-semibold text-charcoal-500 hover:border-terracotta-300 hover:text-terracotta-600 lg:flex"
+        className="mt-3 hidden items-center justify-center gap-2 border border-line px-3 py-2.5 text-sm text-ink-soft transition-colors hover:border-ink hover:text-ink lg:flex"
       >
         Continue shopping
       </Link>

@@ -2,19 +2,30 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, ShoppingBag, Heart, Zap, Check } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Heart, Check, ArrowRight } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { formatNPR, cn } from "@/lib/utils";
-import { productGallery } from "@/lib/config";
+import { productGallery, hasRealImage } from "@/lib/config";
 import { useCart } from "@/lib/cart-context";
 import { useWishlist } from "@/lib/wishlist-context";
+import { ProductCover } from "@/components/product-cover";
+import { FaqAccordion } from "@/components/faq-accordion";
+import type { FaqItem } from "@/lib/faq";
 
-export function ProductDetailClient({ product }: { product: Product }) {
+export function ProductDetailClient({
+  product,
+  detailFaqs,
+}: {
+  product: Product;
+  detailFaqs: FaqItem[];
+}) {
   const router = useRouter();
   const { addItem, setOpen } = useCart();
   const { has, toggle } = useWishlist();
   const images = productGallery(product.images);
+  const showImage = hasRealImage(product.images?.[0]);
   const [active, setActive] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -36,7 +47,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
   const handleAdd = () => {
     addItem(cartPayload, qty);
     setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
+    window.setTimeout(() => setAdded(false), 1600);
   };
   const handleBuyNow = () => {
     addItem(cartPayload, qty);
@@ -45,142 +56,241 @@ export function ProductDetailClient({ product }: { product: Product }) {
   };
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
       {/* Gallery */}
-      <div className="space-y-4">
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-cream-200 shadow-soft">
-          <Image
-            src={images[active]}
-            alt={product.name}
-            fill
-            priority
-            sizes="(max-width:1024px) 100vw, 50vw"
-            className="object-cover"
-          />
-          {onSale && (
-            <span className="badge absolute left-4 top-4 bg-terracotta-500 text-white">Sale</span>
+      <div className="lg:col-span-7">
+        <div className="lg:sticky lg:top-28">
+          <div className="mat relative aspect-square w-full bg-paper-2">
+            {showImage ? (
+              <Image
+                src={images[active]}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width:1024px) 100vw, 56vw"
+                className="object-cover"
+              />
+            ) : (
+              <ProductCover name={product.name} />
+            )}
+            <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-1.5">
+              {product.is_custom && (
+                <span className="badge bg-deep/90 text-ondeep backdrop-blur-sm">Made to order</span>
+              )}
+              {onSale && !product.is_custom && (
+                <span className="badge bg-clay text-white">Sale</span>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-4 border-y border-line py-3">
+            <span className="figure">Fig. — {product.name}</span>
+            <span className="figure text-ink-faint">{product.size ?? "Woven"}</span>
+          </div>
+
+          {showImage && images.length > 1 && (
+            <div className="mt-5 flex gap-2.5">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  aria-label={`View image ${i + 1}`}
+                  aria-current={active === i}
+                  className={cn(
+                    "relative h-[68px] w-[68px] overflow-hidden border transition-colors",
+                    active === i ? "border-clay" : "border-line hover:border-ink"
+                  )}
+                >
+                  <Image src={img} alt="" fill sizes="68px" className="object-cover" />
+                </button>
+              ))}
+            </div>
           )}
         </div>
-        {images.length > 1 && (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                className={cn(
-                  "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 transition",
-                  active === i ? "border-terracotta-500" : "border-transparent opacity-70 hover:opacity-100"
-                )}
-                aria-label={`View image ${i + 1}`}
-              >
-                <Image src={img} alt="" fill sizes="80px" className="object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Info */}
-      <div>
-        {product.category?.name && (
-          <span className="eyebrow">{product.category.name}</span>
-        )}
-        <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
-
-        <div className="mt-4 flex items-center gap-3">
-          <span className="text-3xl font-extrabold text-charcoal-800">
-            {formatNPR(product.price)}
-          </span>
-          {onSale && (
-            <span className="text-lg text-charcoal-300 line-through">
-              {formatNPR(product.compare_at!)}
-            </span>
+      {/* Details */}
+      <div className="lg:col-span-5">
+        <div className="lg:sticky lg:top-28">
+          {product.category?.name && (
+            <Link
+              href={`/shop?category=${product.category.slug}`}
+              className="eyebrow inline-block hover:text-clay"
+            >
+              {product.category.name}
+            </Link>
           )}
-        </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {product.size && (
-            <span className="badge bg-cream-300 text-charcoal-700">Size: {product.size}</span>
-          )}
-          {product.is_custom ? (
-            <span className="badge bg-charcoal-800 text-white">Made to order</span>
-          ) : soldOut ? (
-            <span className="badge bg-red-100 text-red-700">Out of stock</span>
-          ) : (
-            <span className="badge bg-green-100 text-green-700">
-              In stock ({product.stock} available)
-            </span>
-          )}
-        </div>
+          <h1 className="mt-3 font-display text-[clamp(1.9rem,3.2vw,2.6rem)] leading-[1.08] tracking-display text-ink">
+            {product.name}
+          </h1>
 
-        {product.description && (
-          <p className="mt-6 leading-relaxed text-charcoal-500">{product.description}</p>
-        )}
-
-        {product.is_custom ? (
-          <div className="mt-8 rounded-2xl border border-charcoal-100 bg-cream-100 p-5">
-            <p className="font-semibold text-charcoal-800">
-              This is a custom, made-to-order piece.
-            </p>
-            <p className="mt-1 text-sm text-charcoal-500">
-              Head to the Custom Art builder to upload your photo and place the order — no account needed.
-            </p>
-            <a href="/custom-art" className="btn-primary btn-lg mt-4">
-              Start your custom art <Zap className="h-4 w-4" />
-            </a>
+          <div className="mt-5 flex items-baseline gap-3">
+            <span className="tnum font-display text-2xl text-ink">{formatNPR(product.price)}</span>
+            {onSale && (
+              <span className="tnum text-sm text-ink-faint line-through">
+                {formatNPR(product.compare_at!)}
+              </span>
+            )}
           </div>
-        ) : (
-          <>
-            {/* Quantity */}
-            <div className="mt-8 flex items-center gap-4">
-              <span className="font-semibold">Quantity</span>
-              <div className="flex items-center rounded-full border border-charcoal-200">
+
+          <div
+            className={cn(
+              "mt-3 flex items-center gap-2 text-xs font-medium",
+              product.is_custom ? "text-ink-muted" : soldOut ? "text-danger" : "text-success"
+            )}
+          >
+            <span
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                product.is_custom ? "bg-clay" : soldOut ? "bg-danger" : "bg-success"
+              )}
+              aria-hidden="true"
+            />
+            {product.is_custom
+              ? "Made to order · 4–5 days"
+              : soldOut
+                ? "Currently sold out"
+                : `In stock · ${product.stock} available`}
+          </div>
+
+          {product.description && (
+            <p className="mt-6 text-[0.9375rem] leading-relaxed text-ink-soft">{product.description}</p>
+          )}
+
+          {/* Purchase */}
+          {product.is_custom ? (
+            <div className="mt-8 border border-line bg-surface p-5">
+              <p className="font-display text-lg leading-snug tracking-tight text-ink">
+                This piece is made from your photograph.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                Start the commission in the builder — upload a photo, add your delivery details,
+                and we take it from there. No account needed.
+              </p>
+              <Link href="/custom-art" className="btn-primary btn-lg group mt-5 w-full">
+                Start your portrait
+                <ArrowRight className="btn-arrow h-4 w-4" strokeWidth={1.5} />
+              </Link>
+              <p className="mt-3 text-center text-xs text-ink-muted">
+                45 cm round plank · {formatNPR(product.price)}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-8">
+              <div className="flex items-center justify-between gap-4">
+                <span className="label mb-0">Quantity</span>
+                <div className="flex items-center border border-line">
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:bg-paper-2 hover:text-ink disabled:opacity-40"
+                    aria-label="Decrease quantity"
+                    disabled={qty <= 1}
+                  >
+                    <Minus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                  <span className="w-10 text-center text-sm tabular-nums text-ink">{qty}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))}
+                    className="flex h-10 w-10 items-center justify-center text-ink-soft transition-colors hover:bg-paper-2 hover:text-ink disabled:opacity-40"
+                    aria-label="Increase quantity"
+                    disabled={qty >= (product.stock || 99)}
+                  >
+                    <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-2">
                 <button
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="p-2.5 hover:text-terracotta-600"
-                  aria-label="Decrease quantity"
+                  type="button"
+                  onClick={handleAdd}
+                  disabled={soldOut}
+                  className={cn("btn-primary btn-lg flex-1", added && "!bg-clay")}
                 >
-                  <Minus className="h-4 w-4" />
+                  {added ? (
+                    <>
+                      <Check className="h-4 w-4" strokeWidth={1.75} /> Added to cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+                      {soldOut ? "Sold out" : "Add to cart"}
+                    </>
+                  )}
                 </button>
-                <span className="w-10 text-center font-bold">{qty}</span>
                 <button
-                  onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))}
-                  className="p-2.5 hover:text-terracotta-600"
-                  aria-label="Increase quantity"
+                  type="button"
+                  onClick={() => toggle(product.id)}
+                  aria-label={wished ? "Remove from wishlist" : "Save to wishlist"}
+                  aria-pressed={wished}
+                  className={cn(
+                    "flex w-12 items-center justify-center border transition-colors",
+                    wished ? "border-clay text-clay" : "border-line text-ink-soft hover:border-ink hover:text-ink"
+                  )}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Heart className={cn("h-4 w-4", wished && "fill-clay")} strokeWidth={1.5} />
                 </button>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="mt-6 flex flex-wrap gap-3">
               <button
-                onClick={handleAdd}
-                disabled={soldOut}
-                className="btn-dark btn-lg flex-1"
-              >
-                {added ? <Check className="h-5 w-5" /> : <ShoppingBag className="h-5 w-5" />}
-                {added ? "Added!" : "Add to Cart"}
-              </button>
-              <button
+                type="button"
                 onClick={handleBuyNow}
                 disabled={soldOut}
-                className="btn-primary btn-lg flex-1"
+                className="btn-outline btn-lg mt-2 w-full"
               >
-                <Zap className="h-5 w-5" /> Buy Now
+                Buy now
+                <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </button>
-              <button
-                onClick={() => toggle(product.id)}
-                className="btn-outline btn-lg !px-4"
-                aria-label="Toggle wishlist"
-              >
-                <Heart className={cn("h-5 w-5", wished && "fill-terracotta-500 text-terracotta-500")} />
-              </button>
+
+              <p className="mt-3 text-center text-xs text-ink-muted">
+                Delivery calculated at checkout · No account needed
+              </p>
             </div>
-          </>
-        )}
+          )}
+
+          {/* Specification */}
+          <dl className="mt-9 divide-y divide-line border-y border-line">
+            <Spec label="Size" value={product.size ?? "See description"} />
+            <Spec label="Making" value={product.is_custom ? "Woven to order" : "Crafted in Pokhara"} />
+            <Spec label="Materials" value="Thread on wooden plank" />
+            <Spec label="Delivery" value="Across Nepal" />
+          </dl>
+
+          {detailFaqs.length > 0 && (
+            <div className="mt-9">
+              <p className="eyebrow">Good to know</p>
+              <div className="mt-2">
+                <FaqAccordion items={detailFaqs} defaultOpen={null} />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-muted">
+            <a href="/contact" className="link-thread hover:text-ink">
+              Ask about this piece
+            </a>
+            <span className="h-3 w-px bg-line" aria-hidden="true" />
+            <Link href="/shipping" className="link-thread hover:text-ink">
+              Shipping &amp; returns
+            </Link>
+          </div>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function Spec({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-6 py-3">
+      <dt className="font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted">
+        {label}
+      </dt>
+      <dd className="text-right text-sm text-ink">{value}</dd>
     </div>
   );
 }

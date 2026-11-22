@@ -133,7 +133,7 @@ export function AdminSidebar({
           />
           <aside className="absolute left-0 top-0 flex h-full w-72 flex-col bg-charcoal-800 py-5">
             <div className="mb-5 flex items-center justify-between px-5">
-              <Logo className="h-7" variant="light" withLink={false} />
+              <Logo variant="light" withLink={false} />
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
@@ -151,7 +151,7 @@ export function AdminSidebar({
       {/* Desktop sidebar */}
       <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col bg-charcoal-800 py-5 lg:flex">
         <div className="mb-6 px-5">
-          <Logo className="h-8" variant="light" withLink={false} />
+          <Logo variant="light" withLink={false} />
           <p className="mt-1 truncate text-xs text-charcoal-300" title={email}>
             {email}
           </p>

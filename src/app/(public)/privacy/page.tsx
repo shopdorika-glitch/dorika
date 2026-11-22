@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <LegalLayout title="Privacy Policy" updated="November 2026">
-      <p className="text-charcoal-500">
+      <p>
         Dorika (&ldquo;we&rdquo;, &ldquo;us&rdquo;) respects your privacy. This policy explains what we
         collect and how we use it when you shop or submit a custom art request.
       </p>
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
       <LegalSection heading="How we use it">
-        <ul className="list-disc space-y-1 pl-5">
+        <ul className="space-y-1.5">
           <li>To process, craft, and deliver your orders.</li>
           <li>To contact you about your order status via phone, WhatsApp or email.</li>
           <li>To respond to your enquiries.</li>
@@ -30,8 +30,9 @@ export default function PrivacyPage() {
       </LegalSection>
       <LegalSection heading="Your uploaded photos">
         <p>
-          Photos you upload for String Face Art are stored privately and are only accessible to
-          our team through secure, time-limited links. We use them solely to create your artwork.
+          Photos you upload for String Face Art are stored{" "}
+          <mark className="hl-blush">privately</mark> and are only accessible to our team through
+          secure, time-limited links. We use them solely to create your artwork.
           We never sell or publicly share your photos without your permission.
         </p>
       </LegalSection>
@@ -43,17 +44,18 @@ export default function PrivacyPage() {
       </LegalSection>
       <LegalSection heading="Data retention & security">
         <p>
-          We keep order information as long as needed to fulfil your order and meet legal
-          obligations. We apply reasonable safeguards to protect your data.
+          We keep order information as long as needed to fulfil your order and meet{" "}
+          <mark className="hl-blush">legal obligations</mark>. We apply reasonable safeguards to
+          protect your data.
         </p>
       </LegalSection>
       <LegalSection heading="Contact">
         <p>
           Questions about your data? Email us at{" "}
-          <a className="font-semibold text-terracotta-600" href={`mailto:${siteConfig.contact.email}`}>
+          <a className="font-medium text-clay underline decoration-clay/30 underline-offset-2 hover:decoration-clay" href={`mailto:${siteConfig.contact.email}`}>
             {siteConfig.contact.email}
           </a>{" "}
-          or call {siteConfig.contact.phoneDisplay}.
+          or call <mark className="hl-blush">{siteConfig.contact.phoneDisplay}</mark>.
         </p>
       </LegalSection>
     </LegalLayout>

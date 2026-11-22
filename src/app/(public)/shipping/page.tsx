@@ -3,7 +3,7 @@ import { LegalLayout, LegalSection } from "@/components/legal-layout";
 
 export const metadata: Metadata = {
   title: "Shipping & Returns",
-  description: "Delivery across Nepal, timelines, and our returns policy for handmade string art.",
+  description: "Delivery across Nepal, timelines, and our returns policy for crafted string art.",
 };
 
 export default function ShippingPage() {
@@ -23,18 +23,18 @@ export default function ShippingPage() {
         </p>
       </LegalSection>
       <LegalSection heading="Making & dispatch time">
-        <ul className="list-disc space-y-1 pl-5">
+        <ul className="space-y-1.5">
           <li><strong>Ready-made pieces:</strong> dispatched within 1–3 days.</li>
-          <li><strong>Custom String Face Art:</strong> crafted in 7–10 days, then dispatched.</li>
+          <li><strong>Custom String Face Art:</strong> crafted in 4–5 days, then dispatched.</li>
         </ul>
         <p>You can track your order anytime from the Track Order page using your Order ID and phone number.</p>
       </LegalSection>
       <LegalSection heading="Returns & exchanges">
         <p>
-          Because our work is handmade, small natural variations are part of the charm and are not
+          Because our work is crafted by hand, small natural variations are part of the charm and are not
           considered defects.
         </p>
-        <ul className="list-disc space-y-1 pl-5">
+        <ul className="space-y-1.5">
           <li><strong>Damaged in transit:</strong> contact us within 48 hours with photos and we&apos;ll make it right.</li>
           <li><strong>Ready-made items:</strong> may be exchanged if unused and in original condition.</li>
           <li><strong>Custom pieces:</strong> as they&apos;re personalised, they can&apos;t be returned unless they arrive damaged or incorrect.</li>

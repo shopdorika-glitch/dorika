@@ -38,9 +38,9 @@ export default function SignUpPage({
       title="Create your account"
       subtitle="Save your details, see every order in one place, and reuse addresses at checkout. You never need an account to buy from Dorika."
       below={
-        <p className="text-center text-sm text-charcoal-500">
+        <p className="text-center text-sm text-ink-soft">
           Already have one?{" "}
-          <Link href="/account/auth/login" className="font-semibold text-terracotta-600 hover:underline">
+          <Link href="/account/auth/login" className="font-semibold text-clay hover:underline">
             Sign in
           </Link>
         </p>
@@ -113,13 +113,13 @@ export default function SignUpPage({
               Create account
             </button>
 
-            <p className="text-center text-xs leading-relaxed text-charcoal-400">
+            <p className="text-center text-xs leading-relaxed text-ink-muted">
               By creating an account you agree to our{" "}
-              <Link href="/terms" className="font-semibold text-terracotta-600 hover:underline">
+              <Link href="/terms" className="font-semibold text-clay hover:underline">
                 Terms
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="font-semibold text-terracotta-600 hover:underline">
+              <Link href="/privacy" className="font-semibold text-clay hover:underline">
                 Privacy Policy
               </Link>
               .
